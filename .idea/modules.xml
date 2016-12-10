@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MoneyCounter.iml" filepath="$PROJECT_DIR$/MoneyCounter.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/floating/floating.iml" filepath="$PROJECT_DIR$/floating/floating.iml" />
     </modules>
   </component>
 </project>
