@@ -32,6 +32,7 @@ public class CountService extends AccessibilityService {
     public void onCreate() {
         super.onCreate();
         Logger.d("CountService 开启成功");
+
     }
 
     @Override

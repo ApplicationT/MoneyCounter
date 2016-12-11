@@ -5,7 +5,10 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.TextView;
+
+import com.orhanobut.logger.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,12 +35,12 @@ public class MyWindowManager {
     /**
      * 小悬浮窗View的参数
      */
-    private static WindowManager.LayoutParams smallWindowParams;
+    private static LayoutParams smallWindowParams;
 
     /**
      * 大悬浮窗View的参数
      */
-    private static WindowManager.LayoutParams bigWindowParams;
+    private static LayoutParams bigWindowParams;
 
     /**
      * 用于控制在屏幕上添加或移除悬浮窗
@@ -62,11 +65,11 @@ public class MyWindowManager {
         if (smallWindow == null) {
             smallWindow = new FloatWindowSmallView(context);
             if (smallWindowParams == null) {
-                smallWindowParams = new WindowManager.LayoutParams();
-                smallWindowParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+                smallWindowParams = new LayoutParams();
+                smallWindowParams.type = LayoutParams.TYPE_PHONE;
                 smallWindowParams.format = PixelFormat.RGBA_8888;
-                smallWindowParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                smallWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE;
                 smallWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
                 smallWindowParams.width = FloatWindowSmallView.viewWidth;
                 smallWindowParams.height = FloatWindowSmallView.viewHeight;
@@ -75,6 +78,7 @@ public class MyWindowManager {
             }
             smallWindow.setParams(smallWindowParams);
             windowManager.addView(smallWindow, smallWindowParams);
+            Logger.d("将view添加进桌面");
         }
     }
 
@@ -105,10 +109,10 @@ public class MyWindowManager {
         if (bigWindow == null) {
             bigWindow = new FloatWindowBigView(context);
             if (bigWindowParams == null) {
-                bigWindowParams = new WindowManager.LayoutParams();
+                bigWindowParams = new LayoutParams();
                 bigWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
                 bigWindowParams.y = screenHeight / 2 - FloatWindowBigView.viewHeight / 2;
-                bigWindowParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+                bigWindowParams.type = LayoutParams.TYPE_PHONE;
                 bigWindowParams.format = PixelFormat.RGBA_8888;
                 bigWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
                 bigWindowParams.width = FloatWindowBigView.viewWidth;
