@@ -20,6 +20,8 @@ import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
+import applock.anderson.com.moneycounter.view.MyWindowManager;
+
 /**
  * Created by Xiamin on 2016/12/11.
  */
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             accessibilityManager.addAccessibilityStateChangeListener(this);
         }
+        MyWindowManager.createSmallWindow(getApplicationContext());
     }
 
     private void initView() {

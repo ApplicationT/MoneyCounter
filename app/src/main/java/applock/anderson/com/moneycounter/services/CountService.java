@@ -2,12 +2,16 @@ package applock.anderson.com.moneycounter.services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import applock.anderson.com.moneycounter.Bean.PersonMoneyBean;
 
 /**
  * Created by Xiamin on 2016/12/11.
@@ -21,6 +25,7 @@ public class CountService extends AccessibilityService {
     private final static String ITEM_LAYOUT = "com.tencent.mm:id/j0";
 
     private AccessibilityNodeInfo rootNodeInfo;  //界面根节点信息
+    private List<PersonMoneyBean> mMoneyBeanList = new ArrayList<>();
 
 
     @Override
@@ -40,6 +45,8 @@ public class CountService extends AccessibilityService {
 
     }
 
+    private boolean isStart = false;
+    private boolean isEnd = false;
     /**
      * 获取红包金额
      *
@@ -50,64 +57,70 @@ public class CountService extends AccessibilityService {
             rootNodeInfo = getRootInActiveWindow();
         }
         if (rootNodeInfo == null) return;
-        float mTmpMoney = 0;
         Logger.d(" 开始查找金额");
         List<AccessibilityNodeInfo> moneyInfo = null;
         List<AccessibilityNodeInfo> itemInfo = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                Logger.d(" 找到开头 重新统计");
+                mMoneyBeanList.clear();
+            }
+
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(ITEM_LAYOUT);
             if (itemInfo != null && itemInfo.size() != 0) {
                 Logger.d(" 找到item layout查找");
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
-                    if("android.widget.LinearLayout".equals(layoutnode.getClassName())){
+                    if ("android.widget.LinearLayout".equals(layoutnode.getClassName())) {
                         Logger.e("找到layout");
                         List<AccessibilityNodeInfo> name = null;
                         List<AccessibilityNodeInfo> money = null;
                         name = layoutnode.findAccessibilityNodeInfosByViewId(NAME_ID);
                         money = layoutnode.findAccessibilityNodeInfosByViewId(MONEY_ID);
-                        StringBuilder stringBuilder = new StringBuilder("");
                         if (name != null && name.size() != 0 && money != null && money.size() != 0) {
+                            PersonMoneyBean personMoneyBean = new PersonMoneyBean();
                             Logger.e("开始查找姓名和金额");
-                            for(AccessibilityNodeInfo i: name) {
+                            for (AccessibilityNodeInfo i : name) {
                                 if ("android.widget.TextView".equals(i.getClassName())) {
-                                    stringBuilder.append("姓名：" + i.getText().toString());
+                                    personMoneyBean.setName(i.getText().toString());
                                 }
                             }
-                            for(AccessibilityNodeInfo j: money) {
+                            for (AccessibilityNodeInfo j : money) {
                                 if ("android.widget.TextView".equals(j.getClassName())) {
-                                    stringBuilder.append("金额 " + j.getText().toString());
+                                    personMoneyBean.setMoneyString(j.getText().toString());
+                                    Bundle arguments = new Bundle();
+                                    arguments.putCharSequence(
+                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                                            "your info");
+//                                    j.getBoundsInScreen();
+//                                    j.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
                                 }
                             }
-                            Logger.e(stringBuilder.toString());
+                            addToList(personMoneyBean);
+
                         }
                     }
                 }
+
             }
 
-//            moneyInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/bgg");
-//            if (moneyInfo != null && moneyInfo.size() != 0) {
-//                Logger.d(" 找到bb0 金额 查找");
-//
-//                for (AccessibilityNodeInfo mynode : moneyInfo) {
-//                    if ("android.widget.TextView".equals(mynode.getClassName())) {
-////                        Bundle arguments = new Bundle();
-////                        arguments.putCharSequence(AccessibilityNodeInfo
-////                                        .ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "100元");
-////                        if(mynode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,null)){
-////                            Logger.d("设置金额成功");
-////                        } else {
-////                            Logger.d("设置金额失败");
-////                        }
-//
-//                        Logger.d(mynode.getText());
-//                        //mTmpMoney = Float.parseFloat(mynode.getText().toString());
-//                        Logger.d(" 遍历mynode getText(): " + mTmpMoney);
-//                    } else {
-//                        Logger.d(" 该node失败" + mynode.getText());
-//                    }
-//                }
-//                Toast.makeText(this, "金额" + mTmpMoney, Toast.LENGTH_SHORT).show();
-//            }
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                Logger.d(" 找到结尾 结束统计");
+                Logger.d(mMoneyBeanList);
+            }
         }
+    }
+
+    private void addToList(PersonMoneyBean moneyBean) {
+        for (PersonMoneyBean k : mMoneyBeanList) {
+            if (k.getName().toString().equals(moneyBean.getName().toString()) &&
+                    k.getMoneyFloat() == moneyBean.getMoneyFloat()) {
+                return;
+            }
+        }
+        mMoneyBeanList.add(moneyBean);
     }
 }
