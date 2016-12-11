@@ -113,6 +113,8 @@ public class MyWindowManager {
                 bigWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
                 bigWindowParams.y = screenHeight / 2 - FloatWindowBigView.viewHeight / 2;
                 bigWindowParams.type = LayoutParams.TYPE_PHONE;
+                bigWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE;
                 bigWindowParams.format = PixelFormat.RGBA_8888;
                 bigWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
                 bigWindowParams.width = FloatWindowBigView.viewWidth;
