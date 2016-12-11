@@ -14,8 +14,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.kyleduo.switchbutton.SwitchButton;
 import com.orhanobut.logger.Logger;
 
 import java.util.List;
@@ -33,6 +36,10 @@ public class MainActivity extends AppCompatActivity implements
     private AccessibilityManager accessibilityManager;
     private Button mStartButton;
     private Button mSettingButton;
+    private SwitchButton mOpenButton;
+    private SwitchButton mShunziButton;
+    private SwitchButton mBaoziButton;
+    private RadioGroup mRadioGroup;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +61,14 @@ public class MainActivity extends AppCompatActivity implements
         mSettingButton = (Button) findViewById(R.id.start_setting);
         mStartButton.setOnClickListener(this);
         mSettingButton.setOnClickListener(this);
+        mOpenButton = (SwitchButton) findViewById(R.id.btn_1);
+        mShunziButton = (SwitchButton) findViewById(R.id.btn_2);
+        mBaoziButton = (SwitchButton) findViewById(R.id.btn_3);
+        mOpenButton.setOnCheckedChangeListener(mOpenListener);
+        mShunziButton.setOnCheckedChangeListener(mShunziListener);
+        mBaoziButton.setOnCheckedChangeListener(mBaoziListener);
+        mRadioGroup = (RadioGroup) findViewById(R.id.radiogroup);
+        mRadioGroup.setOnCheckedChangeListener(mRadioListener);
     }
 
     /**
@@ -88,8 +103,6 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.start_plugin:
                 openAccessibility();
                 break;
-            case R.id.start_setting:
-                break;
         }
     }
 
@@ -116,4 +129,49 @@ public class MainActivity extends AppCompatActivity implements
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(0xffE46C62);
     }
+
+    private SwitchButton.OnCheckedChangeListener mOpenListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+
+            } else {
+
+            }
+        }
+    };
+
+    private SwitchButton.OnCheckedChangeListener mShunziListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+
+            } else {
+
+            }
+        }
+    };
+
+    private SwitchButton.OnCheckedChangeListener mBaoziListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+
+            } else {
+
+            }
+        }
+    };
+
+    private RadioGroup.OnCheckedChangeListener mRadioListener = new RadioGroup.OnCheckedChangeListener() {
+
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId == R.id.radioButton1) {
+
+            } else if (checkedId == R.id.radioButton2) {
+
+            }
+        }
+    };
 }

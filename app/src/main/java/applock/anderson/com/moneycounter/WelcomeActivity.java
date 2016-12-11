@@ -12,7 +12,8 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
         Logger.init("MoneyCounter");
+        startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+        finish();
     }
 }

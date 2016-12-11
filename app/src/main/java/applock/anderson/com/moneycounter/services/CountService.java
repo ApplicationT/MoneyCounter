@@ -8,6 +8,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.orhanobut.logger.Logger;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class CountService extends AccessibilityService {
     private final static String ITEM_LAYOUT = "com.tencent.mm:id/j0";
 
     private AccessibilityNodeInfo rootNodeInfo;  //界面根节点信息
-    private List<PersonMoneyBean> mMoneyBeanList = new ArrayList<>();
+    private static List<PersonMoneyBean> mMoneyBeanList = new ArrayList<>();
 
 
     @Override
@@ -48,6 +49,7 @@ public class CountService extends AccessibilityService {
 
     private boolean isStart = false;
     private boolean isEnd = false;
+
     /**
      * 获取红包金额
      *
@@ -107,10 +109,10 @@ public class CountService extends AccessibilityService {
             }
 
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
             if (itemInfo != null && itemInfo.size() != 0) {
                 Logger.d(" 找到结尾 结束统计");
                 Logger.d(mMoneyBeanList);
+                startCount();
             }
         }
     }
@@ -123,5 +125,32 @@ public class CountService extends AccessibilityService {
             }
         }
         mMoneyBeanList.add(moneyBean);
+    }
+
+    public static List<PersonMoneyBean> getmMoneyBeanList() {
+        return mMoneyBeanList;
+    }
+
+    String[] lei = new String[10];
+
+    private void startCount() {
+        int[] a = new int[10];
+        for (PersonMoneyBean i : mMoneyBeanList
+                ) {
+            a[(i.moneyInt % 10)]++;
+        }
+        for (int i = 0; i < 10; i++) {
+            float result = (float) a[i] / (float) mMoneyBeanList.size();
+            Logger.d(a[i]);
+            try {
+                DecimalFormat fnum = new DecimalFormat("##0.0");
+                String dd=fnum.format(result * 100) + "%";
+                lei[i] = dd;
+            } catch (Exception e) {
+                Logger.e("浮点数转换出错 " + result + "  " + e.toString());
+            }
+        }
+        Logger.d(lei);
+
     }
 }

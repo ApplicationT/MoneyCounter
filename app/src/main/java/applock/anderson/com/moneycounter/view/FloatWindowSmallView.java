@@ -75,8 +75,9 @@ public class FloatWindowSmallView extends LinearLayout {
     public FloatWindowSmallView(Context context) {
         super(context);
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        LayoutInflater.from(context).inflate(R.layout.float_window_small, this);
+        View myview = LayoutInflater.from(context).inflate(R.layout.float_window_small, this);
         View view = findViewById(R.id.small_window_layout);
+        view.getBackground().setAlpha(140);
         viewWidth = view.getLayoutParams().width;
         viewHeight = view.getLayoutParams().height;
         TextView percentView = (TextView) findViewById(R.id.percent);
@@ -135,8 +136,9 @@ public class FloatWindowSmallView extends LinearLayout {
      * 打开大悬浮窗，同时关闭小悬浮窗。
      */
     private void openBigWindow() {
-        MyWindowManager.createBigWindow(getContext());
-        MyWindowManager.removeSmallWindow(getContext());
+
+        MyWindowManager.showOrnotBigWindow(getContext());
+        //MyWindowManager.removeSmallWindow(getContext());
     }
 
     /**

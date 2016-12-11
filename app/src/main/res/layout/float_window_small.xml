@@ -4,7 +4,7 @@
     android:id="@+id/small_window_layout"
     android:layout_width="50dip"
     android:layout_height="50dip"
-    android:background="@mipmap/ic_launcher"
+    android:background="@drawable/dropcopy"
     >
     <TextView
         android:id="@+id/percent"
@@ -13,5 +13,6 @@
         android:gravity="center"
         android:textColor="#ffffff"
         android:text="test"
+
         />
 </LinearLayout>

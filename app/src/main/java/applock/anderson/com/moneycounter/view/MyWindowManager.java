@@ -111,7 +111,7 @@ public class MyWindowManager {
             if (bigWindowParams == null) {
                 bigWindowParams = new LayoutParams();
                 bigWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
-                bigWindowParams.y = screenHeight / 2 - FloatWindowBigView.viewHeight / 2;
+                bigWindowParams.y = screenHeight / 6 - FloatWindowBigView.viewHeight / 2;
                 bigWindowParams.type = LayoutParams.TYPE_PHONE;
                 bigWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -225,5 +225,20 @@ public class MyWindowManager {
         getActivityManager(context).getMemoryInfo(mi);
         return mi.availMem;
     }
+
+    private void updateBigInfo() {
+
+    }
+
+    public static void showOrnotBigWindow(Context context) {
+        if (bigWindow != null) {
+            WindowManager windowManager = getWindowManager(context);
+            windowManager.removeView(bigWindow);
+            bigWindow = null;
+        } else {
+            createBigWindow(context);
+        }
+    }
+
 
 }

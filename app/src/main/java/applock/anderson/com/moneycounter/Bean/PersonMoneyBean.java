@@ -11,6 +11,7 @@ public class PersonMoneyBean {
     public String name;              //每个红包的用户名称
     public String moneyString;       //红包金额的字符串
     public float moneyFloat;         //红包金额字符串转换结果
+    public int moneyInt;
     public String moneyChange;       //以后修改红包金额
 
     public void setMoneyString(String moneyString) {
@@ -27,6 +28,7 @@ public class PersonMoneyBean {
         System.out.println(b);
         try {
             this.moneyFloat = Float.parseFloat(b);
+            moneyInt = (int)(moneyFloat * 100);
         } catch (Exception e) {
             Logger.e("浮点数转换出错 " + b + "  " + e.toString());
         }
@@ -35,7 +37,8 @@ public class PersonMoneyBean {
 
     @Override
     public String toString() {
-        return "姓名 " + name + " 红包字符串 " + moneyString + " 金额为 " + moneyFloat + "\n";
+        return "姓名 " + name + " 红包字符串 " + moneyString +
+                " 金额为 " + moneyFloat + " "+ moneyInt + "\n";
     }
 
     @Override
