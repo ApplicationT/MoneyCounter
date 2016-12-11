@@ -32,12 +32,14 @@
             android:id="@+id/start_plugin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="开启插件" />
+            android:text="开启插件"
+            android:layout_weight="1"/>
         <Button
             android:id="@+id/start_setting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="进入设置" />
+            android:text="进入设置"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 </LinearLayout>
