@@ -1,6 +1,8 @@
 package applock.anderson.com.moneycounter.services;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import applock.anderson.com.moneycounter.Bean.PersonMoneyBean;
+import applock.anderson.com.moneycounter.Utils.SettingsContact;
 
 /**
  * Created by Xiamin on 2016/12/11.
@@ -28,12 +31,17 @@ public class CountService extends AccessibilityService {
     private AccessibilityNodeInfo rootNodeInfo;  //界面根节点信息
     private static List<PersonMoneyBean> mMoneyBeanList = new ArrayList<>();
 
+    private boolean isOpen = false;
+    private boolean isBaozi = false;
+    private boolean isShunzi = false;
+    private int mWeishu = 2;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         Logger.d("CountService 开启成功");
-
+        initSettings();
     }
 
     @Override
@@ -135,8 +143,7 @@ public class CountService extends AccessibilityService {
 
     private void startCount() {
         int[] a = new int[10];
-        for (PersonMoneyBean i : mMoneyBeanList
-                ) {
+        for (PersonMoneyBean i : mMoneyBeanList) {
             a[(i.moneyInt % 10)]++;
         }
         for (int i = 0; i < 10; i++) {
@@ -144,13 +151,49 @@ public class CountService extends AccessibilityService {
             Logger.d(a[i]);
             try {
                 DecimalFormat fnum = new DecimalFormat("##0.0");
-                String dd=fnum.format(result * 100) + "%";
+                String dd = fnum.format(result * 100) + "%";
                 lei[i] = dd;
             } catch (Exception e) {
                 Logger.e("浮点数转换出错 " + result + "  " + e.toString());
             }
         }
         Logger.d(lei);
+    }
 
+
+    private void initSettings() {
+        SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+        isOpen = sharedPreferences.getBoolean(SettingsContact.OPEN, false);
+        isBaozi = sharedPreferences.getBoolean(SettingsContact.BAOZI, false);
+        isShunzi = sharedPreferences.getBoolean(SettingsContact.SHUNZI, false);
+        mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI,0);
+        Logger.d("init open state:" + isOpen + " baozi: " + isBaozi + "shunzi: " + isShunzi + "Weizhi: " + mWeishu);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals(SettingsContact.OPEN)) {
+                    if (sharedPreferences.getBoolean(key, false)) {
+                        isOpen = true;
+                    } else {
+                        isOpen = false;
+                    }
+                } else if (key.equals(SettingsContact.BAOZI)) {
+                    if (sharedPreferences.getBoolean(key, false)) {
+                        isBaozi = true;
+                    } else {
+                        isBaozi = false;
+                    }
+                } else if (key.equals(SettingsContact.SHUNZI)) {
+                    if (sharedPreferences.getBoolean(key, false)) {
+                        isShunzi = true;
+                    } else {
+                        isShunzi = false;
+                    }
+                } else if (key.equals(SettingsContact.WEIZHI)) {
+                    mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI, 0);
+                }
+                Logger.d("open state:" + isOpen + " baozi: " + isBaozi + "shunzi: " + isShunzi + "Weizhi: " + mWeishu);
+            }
+        });
     }
 }

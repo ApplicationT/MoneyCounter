@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -23,6 +24,7 @@ import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
+import applock.anderson.com.moneycounter.Utils.SettingsContact;
 import applock.anderson.com.moneycounter.view.MyWindowManager;
 
 /**
@@ -58,17 +60,23 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initView() {
         mStartButton = (Button) findViewById(R.id.start_plugin);
-        mSettingButton = (Button) findViewById(R.id.start_setting);
         mStartButton.setOnClickListener(this);
-        mSettingButton.setOnClickListener(this);
         mOpenButton = (SwitchButton) findViewById(R.id.btn_1);
         mShunziButton = (SwitchButton) findViewById(R.id.btn_2);
         mBaoziButton = (SwitchButton) findViewById(R.id.btn_3);
+        mRadioGroup = (RadioGroup) findViewById(R.id.radiogroup);
+        mRadioGroup.setOnCheckedChangeListener(mRadioListener);
+        SharedPreferences sp = getSharedPreferences("setting",Context.MODE_PRIVATE);
+        if(sp != null) {
+            mOpenButton.setChecked(sp.getBoolean(SettingsContact.OPEN,false));
+            mShunziButton.setChecked(sp.getBoolean(SettingsContact.SHUNZI,false));
+            mShunziButton.setChecked(sp.getBoolean(SettingsContact.BAOZI,false));
+        }
         mOpenButton.setOnCheckedChangeListener(mOpenListener);
         mShunziButton.setOnCheckedChangeListener(mShunziListener);
         mBaoziButton.setOnCheckedChangeListener(mBaoziListener);
-        mRadioGroup = (RadioGroup) findViewById(R.id.radiogroup);
-        mRadioGroup.setOnCheckedChangeListener(mRadioListener);
+
+
     }
 
     /**
@@ -108,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public void openAccessibility() {
         try {
-            Toast.makeText(this, "点击「海贼王插件」选择打开或者关闭", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "点击「雷中雷插件」选择打开或者关闭", Toast.LENGTH_SHORT).show();
             Intent accessibleIntent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             startActivity(accessibleIntent);
         } catch (Exception e) {
@@ -134,9 +142,15 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.OPEN,true);
+                editor.commit();
             } else {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.OPEN,false);
+                editor.commit();
             }
         }
     };
@@ -145,9 +159,15 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.SHUNZI,true);
+                editor.commit();
             } else {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.SHUNZI,false);
+                editor.commit();
             }
         }
     };
@@ -156,9 +176,15 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.BAOZI,true);
+                editor.commit();
             } else {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.BAOZI,false);
+                editor.commit();
             }
         }
     };
@@ -168,9 +194,15 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             if (checkedId == R.id.radioButton1) {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(SettingsContact.WEIZHI,1);
+                editor.commit();
             } else if (checkedId == R.id.radioButton2) {
-
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(SettingsContact.WEIZHI,2);
+                editor.commit();
             }
         }
     };
