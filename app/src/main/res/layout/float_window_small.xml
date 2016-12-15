@@ -2,9 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/small_window_layout"
-    android:layout_width="50dip"
-    android:layout_height="50dip"
-    android:background="@drawable/dropcopy"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:background="@drawable/bolt"
     >
     <TextView
         android:id="@+id/percent"
@@ -13,6 +13,7 @@
         android:gravity="center"
         android:textColor="#ffffff"
         android:text="test"
+        android:visibility="gone"
 
         />
 </LinearLayout>

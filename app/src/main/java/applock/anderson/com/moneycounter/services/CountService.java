@@ -34,6 +34,8 @@ public class CountService extends AccessibilityService {
     private boolean isOpen = false;
     private boolean isBaozi = false;
     private boolean isShunzi = false;
+    private boolean isFloatOpen = false;
+    private boolean isGetMoney = false;
     private int mWeishu = 2;
 
 
@@ -47,7 +49,27 @@ public class CountService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         Logger.d("界面变化，触发onAccessibilityEvent");
-        watchChatMoney(event);
+        if(isOpen) {
+            /*采集雷值*/
+            if(mWeishu == 2) {
+                watchChatMoney2(event);
+            } else {
+
+            }
+            /*采集豹子*/
+            if(isBaozi) {
+
+            }
+            //采集顺子数据
+            if (isShunzi) {
+
+            }
+
+            //抢红包
+            if(isGetMoney) {
+
+            }
+        }
     }
 
     @Override
@@ -63,7 +85,7 @@ public class CountService extends AccessibilityService {
      *
      * @param event
      */
-    private void watchChatMoney(AccessibilityEvent event) {
+    private void watchChatMoney2(AccessibilityEvent event) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             rootNodeInfo = getRootInActiveWindow();
         }
@@ -166,7 +188,9 @@ public class CountService extends AccessibilityService {
         isOpen = sharedPreferences.getBoolean(SettingsContact.OPEN, false);
         isBaozi = sharedPreferences.getBoolean(SettingsContact.BAOZI, false);
         isShunzi = sharedPreferences.getBoolean(SettingsContact.SHUNZI, false);
-        mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI,0);
+        isFloatOpen = sharedPreferences.getBoolean(SettingsContact.FLOAT, false);
+        isGetMoney = sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false);
+        mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI, 2);
         Logger.d("init open state:" + isOpen + " baozi: " + isBaozi + "shunzi: " + isShunzi + "Weizhi: " + mWeishu);
         sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -190,9 +214,14 @@ public class CountService extends AccessibilityService {
                         isShunzi = false;
                     }
                 } else if (key.equals(SettingsContact.WEIZHI)) {
-                    mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI, 0);
+                    mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI, 2);
+                } else if (key.equals(SettingsContact.FLOAT)) {
+                    isFloatOpen = sharedPreferences.getBoolean(SettingsContact.FLOAT, false);
+                } else if (key.equals(SettingsContact.GET_MONEY)) {
+                    isGetMoney = sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false);
                 }
-                Logger.d("open state:" + isOpen + " baozi: " + isBaozi + "shunzi: " + isShunzi + "Weizhi: " + mWeishu);
+                Logger.d("open state:" + isOpen + " baozi: " + isBaozi + " shunzi: " + isShunzi
+                        + "  Weizhi: " + mWeishu + " isFloatOpen " + isFloatOpen + " isGetMoney:" + isGetMoney);
             }
         });
     }

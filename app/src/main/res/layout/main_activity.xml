@@ -94,6 +94,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="4dp"
@@ -117,9 +119,16 @@
             android:layout_marginRight="30dip" />
     </LinearLayout>
 
+    <View xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/holo_red_light" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="4dp"
@@ -143,10 +152,6 @@
             android:layout_marginRight="30dip" />
     </LinearLayout>
 
-    <View xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/holo_red_light" />
 
     <View xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -156,6 +161,43 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="4dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_open_getmoney"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="抢红包开关"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
+        <com.kyleduo.switchbutton.SwitchButton
+            android:id="@+id/but_open_getmoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="30dip" />
+    </LinearLayout>
+
+    <View xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/holo_red_light"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="4dp"
@@ -167,7 +209,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="隐藏悬浮开关"
+            android:text="悬浮窗开关"
             android:textColor="@android:color/black"
             android:textSize="20sp" />
 
@@ -191,9 +233,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </LinearLayout>
+        android:layout_height="wrap_content"></LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

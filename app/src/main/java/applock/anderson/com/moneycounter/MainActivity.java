@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements
     private SwitchButton mOpenButton;
     private SwitchButton mShunziButton;
     private SwitchButton mBaoziButton;
+    private SwitchButton mFloatButton;
+    private SwitchButton mGetMoney;
     private RadioGroup mRadioGroup;
 
     @Override
@@ -48,14 +50,14 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         initView();
-
+        handleMaterialStatusBar();
         Logger.d("开始 监听AccessibilityService 变化");
         //监听AccessibilityService 变化
         accessibilityManager = (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             accessibilityManager.addAccessibilityStateChangeListener(this);
         }
-        MyWindowManager.createSmallWindow(getApplicationContext());
+
     }
 
     private void initView() {
@@ -65,18 +67,25 @@ public class MainActivity extends AppCompatActivity implements
         mShunziButton = (SwitchButton) findViewById(R.id.btn_2);
         mBaoziButton = (SwitchButton) findViewById(R.id.btn_3);
         mRadioGroup = (RadioGroup) findViewById(R.id.radiogroup);
+        mGetMoney = (SwitchButton) findViewById(R.id.but_open_getmoney);
+        mFloatButton = (SwitchButton) findViewById(R.id.btn_5);
         mRadioGroup.setOnCheckedChangeListener(mRadioListener);
-        SharedPreferences sp = getSharedPreferences("setting",Context.MODE_PRIVATE);
-        if(sp != null) {
-            mOpenButton.setChecked(sp.getBoolean(SettingsContact.OPEN,false));
-            mShunziButton.setChecked(sp.getBoolean(SettingsContact.SHUNZI,false));
-            mShunziButton.setChecked(sp.getBoolean(SettingsContact.BAOZI,false));
+        SharedPreferences sp = getSharedPreferences("setting", Context.MODE_PRIVATE);
+        if (sp != null) {
+            mOpenButton.setChecked(sp.getBoolean(SettingsContact.OPEN, false));
+            mShunziButton.setChecked(sp.getBoolean(SettingsContact.SHUNZI, false));
+            mBaoziButton.setChecked(sp.getBoolean(SettingsContact.BAOZI, false));
+            mFloatButton.setChecked(sp.getBoolean(SettingsContact.FLOAT, false));
+            mGetMoney.setChecked(sp.getBoolean(SettingsContact.GET_MONEY,false));
+            if(mFloatButton.isChecked()) {
+                MyWindowManager.createSmallWindow(getApplicationContext());
+            }
         }
+        mFloatButton.setOnCheckedChangeListener(mfloatListener);
         mOpenButton.setOnCheckedChangeListener(mOpenListener);
         mShunziButton.setOnCheckedChangeListener(mShunziListener);
         mBaoziButton.setOnCheckedChangeListener(mBaoziListener);
-
-
+        mGetMoney.setOnCheckedChangeListener(mOpenMoneyListener);
     }
 
     /**
@@ -144,12 +153,12 @@ public class MainActivity extends AppCompatActivity implements
             if (isChecked) {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(SettingsContact.OPEN,true);
+                editor.putBoolean(SettingsContact.OPEN, true);
                 editor.commit();
             } else {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(SettingsContact.OPEN,false);
+                editor.putBoolean(SettingsContact.OPEN, false);
                 editor.commit();
             }
         }
@@ -161,12 +170,12 @@ public class MainActivity extends AppCompatActivity implements
             if (isChecked) {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(SettingsContact.SHUNZI,true);
+                editor.putBoolean(SettingsContact.SHUNZI, true);
                 editor.commit();
             } else {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(SettingsContact.SHUNZI,false);
+                editor.putBoolean(SettingsContact.SHUNZI, false);
                 editor.commit();
             }
         }
@@ -178,12 +187,48 @@ public class MainActivity extends AppCompatActivity implements
             if (isChecked) {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(SettingsContact.BAOZI,true);
+                editor.putBoolean(SettingsContact.BAOZI, true);
                 editor.commit();
             } else {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(SettingsContact.BAOZI,false);
+                editor.putBoolean(SettingsContact.BAOZI, false);
+                editor.commit();
+            }
+        }
+    };
+
+    private SwitchButton.OnCheckedChangeListener mfloatListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.FLOAT, true);
+                editor.commit();
+                MyWindowManager.createSmallWindow(getApplicationContext());
+            } else {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.FLOAT, false);
+                editor.commit();
+                MyWindowManager.removeSmallWindow(getApplicationContext());
+            }
+        }
+    };
+
+    private SwitchButton.OnCheckedChangeListener mOpenMoneyListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.GET_MONEY, true);
+                editor.commit();
+            } else {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.GET_MONEY, false);
                 editor.commit();
             }
         }
@@ -196,12 +241,12 @@ public class MainActivity extends AppCompatActivity implements
             if (checkedId == R.id.radioButton1) {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(SettingsContact.WEIZHI,1);
+                editor.putInt(SettingsContact.WEIZHI, 1);
                 editor.commit();
             } else if (checkedId == R.id.radioButton2) {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(SettingsContact.WEIZHI,2);
+                editor.putInt(SettingsContact.WEIZHI, 2);
                 editor.commit();
             }
         }
