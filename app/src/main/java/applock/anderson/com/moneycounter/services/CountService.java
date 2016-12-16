@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -12,6 +13,7 @@ import com.orhanobut.logger.Logger;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import applock.anderson.com.moneycounter.Bean.PersonMoneyBean;
@@ -22,11 +24,12 @@ import applock.anderson.com.moneycounter.Utils.SettingsContact;
  */
 
 public class CountService extends AccessibilityService {
-    private final static String FIRST_HINT = "com.tencent.mm:id/be6";
-    private final static String NAME_ID = "com.tencent.mm:id/bgc";
-    private final static String MONEY_ID = "com.tencent.mm:id/bgg";
-    private final static String END_HINT = "com.tencent.mm:id/bgo";
-    private final static String ITEM_LAYOUT = "com.tencent.mm:id/j0";
+    private final static String TAG = "MoneyCounter";
+    private final static String FIRST_HINT = "com.tencent.mm:id/baq";
+    private final static String NAME_ID = "com.tencent.mm:id/bdn";
+    private final static String MONEY_ID = "com.tencent.mm:id/bdr";
+    private final static String END_HINT = "com.tencent.mm:id/bdx";
+    private final static String ITEM_LAYOUT = "com.tencent.mm:id/li";
 
     private AccessibilityNodeInfo rootNodeInfo;  //界面根节点信息
     private static List<PersonMoneyBean> mMoneyBeanList = new ArrayList<>();
@@ -49,15 +52,16 @@ public class CountService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         Logger.d("界面变化，触发onAccessibilityEvent");
-        if(isOpen) {
+        if (isOpen) {
+            watchChatMoney(event);
             /*采集雷值*/
-            if(mWeishu == 2) {
-                watchChatMoney2(event);
+            if (mWeishu == 2) {
+                startCount2();
             } else {
-
+                startCount1();
             }
             /*采集豹子*/
-            if(isBaozi) {
+            if (isBaozi) {
 
             }
             //采集顺子数据
@@ -65,8 +69,12 @@ public class CountService extends AccessibilityService {
 
             }
 
+            if (mDataChangedListener != null) {
+                mDataChangedListener.onChanged();
+            }
+
             //抢红包
-            if(isGetMoney) {
+            if (isGetMoney) {
 
             }
         }
@@ -85,25 +93,26 @@ public class CountService extends AccessibilityService {
      *
      * @param event
      */
-    private void watchChatMoney2(AccessibilityEvent event) {
+    private void watchChatMoney(AccessibilityEvent event) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             rootNodeInfo = getRootInActiveWindow();
         }
         if (rootNodeInfo == null) return;
-        Logger.d(" 开始查找金额");
+        Log.i(TAG, "开始查找金额");
         List<AccessibilityNodeInfo> moneyInfo = null;
         List<AccessibilityNodeInfo> itemInfo = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
             if (itemInfo != null && itemInfo.size() != 0) {
-                Logger.d(" 找到开头 重新统计");
+                Log.d(TAG, " 找到开头 重新统计");
+                isEnd = false;
                 mMoneyBeanList.clear();
             }
 
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(ITEM_LAYOUT);
             if (itemInfo != null && itemInfo.size() != 0) {
-                Logger.d(" 找到item layout查找");
+                Log.d(TAG, " 找到item layout查找");
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
                     if ("android.widget.LinearLayout".equals(layoutnode.getClassName())) {
                         Logger.e("找到layout");
@@ -113,7 +122,7 @@ public class CountService extends AccessibilityService {
                         money = layoutnode.findAccessibilityNodeInfosByViewId(MONEY_ID);
                         if (name != null && name.size() != 0 && money != null && money.size() != 0) {
                             PersonMoneyBean personMoneyBean = new PersonMoneyBean();
-                            Logger.e("开始查找姓名和金额");
+                            Log.e(TAG, "开始查找姓名和金额");
                             for (AccessibilityNodeInfo i : name) {
                                 if ("android.widget.TextView".equals(i.getClassName())) {
                                     personMoneyBean.setName(i.getText().toString());
@@ -126,12 +135,10 @@ public class CountService extends AccessibilityService {
                                     arguments.putCharSequence(
                                             AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
                                             "your info");
-//                                    j.getBoundsInScreen();
-//                                    j.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
                                 }
                             }
+                            Log.e(TAG, personMoneyBean.toString());
                             addToList(personMoneyBean);
-
                         }
                     }
                 }
@@ -139,10 +146,9 @@ public class CountService extends AccessibilityService {
             }
 
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
-            if (itemInfo != null && itemInfo.size() != 0) {
-                Logger.d(" 找到结尾 结束统计");
-                Logger.d(mMoneyBeanList);
-                startCount();
+            if (itemInfo != null && itemInfo.size() != 0 && isEnd == false) {
+                Logger.d(" 找到结尾 结束统计" + mMoneyBeanList);
+                isEnd = true;
             }
         }
     }
@@ -161,27 +167,84 @@ public class CountService extends AccessibilityService {
         return mMoneyBeanList;
     }
 
-    String[] lei = new String[10];
+    int[] a = new int[10];
 
-    private void startCount() {
-        int[] a = new int[10];
+    private void startCount2() {
+        Log.i(TAG, "开始 startCount1");
+        Logger.d(mMoneyBeanList);
+        ArrayList<Info> infos = new ArrayList<>();
+        for (int i = 0; i < a.length; i++) {
+            a[i] = 0;
+        }
+        /*统计角位*/
         for (PersonMoneyBean i : mMoneyBeanList) {
             a[(i.moneyInt % 10)]++;
         }
         for (int i = 0; i < 10; i++) {
             float result = (float) a[i] / (float) mMoneyBeanList.size();
-            Logger.d(a[i]);
+            Info info = new Info();
+            info.index = i;
+            info.num = a[i];
+            info.result = result;
             try {
                 DecimalFormat fnum = new DecimalFormat("##0.0");
                 String dd = fnum.format(result * 100) + "%";
-                lei[i] = dd;
+                info.str = dd;
             } catch (Exception e) {
                 Logger.e("浮点数转换出错 " + result + "  " + e.toString());
             }
+            infos.add(info);
         }
-        Logger.d(lei);
+        Collections.sort(infos);
+        Logger.d(infos);
     }
 
+    class Info implements Comparable<Info> {
+        int index;
+        int num;
+        float result;
+        String str;
+
+        @Override
+        public int compareTo(Info o) {
+            return o.num - num;
+        }
+
+        @Override
+        public String toString() {
+            return "idex: " + index + " ,num= " + num + ",str= " + str;
+        }
+    }
+
+    private void startCount1() {
+        Log.i(TAG, "开始 startCount1");
+        Logger.d(mMoneyBeanList);
+        ArrayList<Info> infos = new ArrayList<>();
+        for (int i = 0; i < a.length; i++) {
+            a[i] = 0;
+        }
+        /*统计角位*/
+        for (PersonMoneyBean i : mMoneyBeanList) {
+            a[((i.moneyInt / 10) % 10)]++;
+        }
+        for (int i = 0; i < 10; i++) {
+            float result = (float) a[i] / (float) mMoneyBeanList.size();
+            Info info = new Info();
+            info.index = i;
+            info.num = a[i];
+            info.result = result;
+            try {
+                DecimalFormat fnum = new DecimalFormat("##0.0");
+                String dd = fnum.format(result * 100) + "%";
+                info.str = dd;
+            } catch (Exception e) {
+                Logger.e("浮点数转换出错 " + result + "  " + e.toString());
+            }
+            infos.add(info);
+        }
+        Collections.sort(infos);
+        Logger.d(infos);
+    }
 
     private void initSettings() {
         SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
@@ -224,5 +287,15 @@ public class CountService extends AccessibilityService {
                         + "  Weizhi: " + mWeishu + " isFloatOpen " + isFloatOpen + " isGetMoney:" + isGetMoney);
             }
         });
+    }
+
+    private DataChangedListener mDataChangedListener;
+
+    public interface DataChangedListener {
+        public void onChanged();
+    }
+
+    public void setOnDataChangedListener(DataChangedListener dataChangedListener) {
+        mDataChangedListener = dataChangedListener;
     }
 }

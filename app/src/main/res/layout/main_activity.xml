@@ -237,9 +237,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingTop="30dp">
+        android:paddingTop="30dp"
+        android:background="@drawable/flash">
 
         <Button
             android:id="@+id/start_plugin"

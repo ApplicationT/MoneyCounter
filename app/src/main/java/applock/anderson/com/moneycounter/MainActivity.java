@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements
                 editor.putBoolean(SettingsContact.FLOAT, false);
                 editor.commit();
                 MyWindowManager.removeSmallWindow(getApplicationContext());
+                MyWindowManager.removeBigWindow(getApplicationContext());
             }
         }
     };
