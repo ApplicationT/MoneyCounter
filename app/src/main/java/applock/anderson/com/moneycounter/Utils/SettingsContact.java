@@ -11,6 +11,7 @@ public class SettingsContact {
     public static final String WEIZHI = "weizhi";
     public static final String FLOAT = "float";
     public static final String GET_MONEY = "getmoney";
+    public static final String MUSIC = "music";
 
 
 }

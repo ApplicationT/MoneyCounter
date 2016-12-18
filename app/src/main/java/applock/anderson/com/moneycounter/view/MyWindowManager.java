@@ -3,6 +3,7 @@ package applock.anderson.com.moneycounter.view;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -13,8 +14,11 @@ import com.orhanobut.logger.Logger;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import applock.anderson.com.moneycounter.R;
+import applock.anderson.com.moneycounter.services.CountService;
 
 /**
  * Created by Xiamin on 2016/12/11.
@@ -32,6 +36,8 @@ public class MyWindowManager {
      */
     private static FloatWindowBigView bigWindow;
 
+    private static FloatWindowHintView mHintView;
+    private static LayoutParams mHintWindowParams;
     /**
      * 小悬浮窗View的参数
      */
@@ -55,10 +61,10 @@ public class MyWindowManager {
     /**
      * 创建一个小悬浮窗。初始位置为屏幕的右部中间位置。
      *
-     * @param context
-     *            必须为应用程序的Context.
+     * @param context 必须为应用程序的Context.
      */
     public static void createSmallWindow(Context context) {
+        mContext = context;
         WindowManager windowManager = getWindowManager(context);
         int screenWidth = windowManager.getDefaultDisplay().getWidth();
         int screenHeight = windowManager.getDefaultDisplay().getHeight();
@@ -66,7 +72,7 @@ public class MyWindowManager {
             smallWindow = new FloatWindowSmallView(context);
             if (smallWindowParams == null) {
                 smallWindowParams = new LayoutParams();
-                smallWindowParams.type = LayoutParams.TYPE_PHONE;
+                smallWindowParams.type = LayoutParams.TYPE_TOAST;
                 smallWindowParams.format = PixelFormat.RGBA_8888;
                 smallWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -78,29 +84,29 @@ public class MyWindowManager {
             }
             smallWindow.setParams(smallWindowParams);
             windowManager.addView(smallWindow, smallWindowParams);
-            Logger.d("将view添加进桌面");
+            Logger.d("将small view添加进桌面");
         }
     }
 
     /**
      * 将小悬浮窗从屏幕上移除。
      *
-     * @param context
-     *            必须为应用程序的Context.
+     * @param context 必须为应用程序的Context.
      */
     public static void removeSmallWindow(Context context) {
         if (smallWindow != null) {
             WindowManager windowManager = getWindowManager(context);
             windowManager.removeView(smallWindow);
+            windowManager.removeViewImmediate(smallWindow);
             smallWindow = null;
+            Logger.d("移除small view");
         }
     }
 
     /**
      * 创建一个大悬浮窗。位置为屏幕正中间。
      *
-     * @param context
-     *            必须为应用程序的Context.
+     * @param context 必须为应用程序的Context.
      */
     public static void createBigWindow(Context context) {
         WindowManager windowManager = getWindowManager(context);
@@ -112,7 +118,7 @@ public class MyWindowManager {
                 bigWindowParams = new LayoutParams();
                 bigWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
                 bigWindowParams.y = screenHeight / 8 - FloatWindowBigView.viewHeight / 2;
-                bigWindowParams.type = LayoutParams.TYPE_PHONE;
+                bigWindowParams.type = LayoutParams.TYPE_TOAST;
                 bigWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | LayoutParams.FLAG_NOT_FOCUSABLE;
                 bigWindowParams.format = PixelFormat.RGBA_8888;
@@ -121,28 +127,30 @@ public class MyWindowManager {
                 bigWindowParams.height = FloatWindowBigView.viewHeight;
             }
             windowManager.addView(bigWindow, bigWindowParams);
+            Logger.d("添加big view");
+            bigWindow.upDateView(data1,data2,data3);
         }
+
     }
 
     /**
      * 将大悬浮窗从屏幕上移除。
      *
-     * @param context
-     *            必须为应用程序的Context.
+     * @param context 必须为应用程序的Context.
      */
     public static void removeBigWindow(Context context) {
         if (bigWindow != null) {
             WindowManager windowManager = getWindowManager(context);
             windowManager.removeView(bigWindow);
             bigWindow = null;
+            Logger.d("移除big view");
         }
     }
 
     /**
      * 更新小悬浮窗的TextView上的数据，显示内存使用的百分比。
      *
-     * @param context
-     *            可传入应用程序上下文。
+     * @param context 可传入应用程序上下文。
      */
     public static void updateUsedPercent(Context context) {
         if (smallWindow != null) {
@@ -163,8 +171,7 @@ public class MyWindowManager {
     /**
      * 如果WindowManager还未创建，则创建一个新的WindowManager返回。否则返回当前已创建的WindowManager。
      *
-     * @param context
-     *            必须为应用程序的Context.
+     * @param context 必须为应用程序的Context.
      * @return WindowManager的实例，用于控制在屏幕上添加或移除悬浮窗。
      */
     private static WindowManager getWindowManager(Context context) {
@@ -177,8 +184,7 @@ public class MyWindowManager {
     /**
      * 如果ActivityManager还未创建，则创建一个新的ActivityManager返回。否则返回当前已创建的ActivityManager。
      *
-     * @param context
-     *            可传入应用程序上下文。
+     * @param context 可传入应用程序上下文。
      * @return ActivityManager的实例，用于获取手机可用内存。
      */
     private static ActivityManager getActivityManager(Context context) {
@@ -191,8 +197,7 @@ public class MyWindowManager {
     /**
      * 计算已使用内存的百分比，并返回。
      *
-     * @param context
-     *            可传入应用程序上下文。
+     * @param context 可传入应用程序上下文。
      * @return 已使用内存的百分比，以字符串形式返回。
      */
     public static String getUsedPercentValue(Context context) {
@@ -216,8 +221,7 @@ public class MyWindowManager {
     /**
      * 获取当前可用内存，返回数据以字节为单位。
      *
-     * @param context
-     *            可传入应用程序上下文。
+     * @param context 可传入应用程序上下文。
      * @return 当前可用内存。
      */
     private static long getAvailableMemory(Context context) {
@@ -240,5 +244,83 @@ public class MyWindowManager {
         }
     }
 
+    private static String[] data1;
+    private static String data2;
+    private static String data3;
 
+
+    public static void updateBigWindowData(String[] dataLei, String baozi, String shunzi) {
+        data1 = dataLei;
+        data2 = baozi;
+        data3 = shunzi;
+        if (bigWindow != null) {
+            bigWindow.upDateView(dataLei, baozi, shunzi);
+        }
+    }
+
+    private static Context mContext;
+    private static Timer timer = new Timer();
+    private static TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+
+        }
+    };
+
+
+    public static void createHintWindow(final Context context) {
+        Handler handler = new Handler();
+        mContext = context;
+        WindowManager windowManager = getWindowManager(context);
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        if (mHintView == null) {
+            mHintView = new FloatWindowHintView(mContext);
+            String jianyi = "";
+            if(data1 != null && data1[0] != null) {
+                jianyi= "雷中雷建议雷值：" + CountService.no1+ ", " + CountService.no2;
+            }
+            String tisi = "雷中雷提示：豹子" + data2 +  " 顺子" + data3;
+            Logger.d("添加hint viewcanshu" + jianyi + tisi);
+            mHintView.upDateUI(jianyi,tisi);
+            if (mHintWindowParams == null) {
+                mHintWindowParams = new LayoutParams();
+                  mHintWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
+                  mHintWindowParams.y = screenHeight / 8 - FloatWindowBigView.viewHeight / 2;
+                mHintWindowParams.type = LayoutParams.TYPE_TOAST;
+                mHintWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
+                mHintWindowParams.format = PixelFormat.RGBA_8888;
+                mHintWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
+                mHintWindowParams.width = FloatWindowBigView.viewWidth;
+                mHintWindowParams.height = FloatWindowBigView.viewHeight;
+            }
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WindowManager windowManager = getWindowManager(context);
+                    if (mHintView != null) {
+                        windowManager.addView(mHintView, mHintWindowParams);
+                        Logger.d("添加hint view");
+                    } else {
+                        Logger.d("添加hint view失败  为空");
+                    }
+                }
+            }, 2000);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mHintView != null) {
+                        WindowManager windowManager = getWindowManager(context);
+                        windowManager.removeViewImmediate(mHintView);
+                        mHintView = null;
+                        Logger.d("移除hint view");
+                    }
+                }
+            }, 9000);
+        }
+
+    }
 }
+
+

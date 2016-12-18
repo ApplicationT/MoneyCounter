@@ -5,31 +5,44 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import applock.anderson.com.moneycounter.Bean.PersonMoneyBean;
 import applock.anderson.com.moneycounter.Utils.SettingsContact;
+import applock.anderson.com.moneycounter.view.MyWindowManager;
 
 /**
  * Created by Xiamin on 2016/12/11.
  */
 
 public class CountService extends AccessibilityService {
-    private final static String TAG = "MoneyCounter";
+    public final static String TAG = "MoneyCounter";
+    private final static String PACK_Hint = "com.tencent.mm:id/bai";
     private final static String FIRST_HINT = "com.tencent.mm:id/baq";
     private final static String NAME_ID = "com.tencent.mm:id/bdn";
     private final static String MONEY_ID = "com.tencent.mm:id/bdr";
     private final static String END_HINT = "com.tencent.mm:id/bdx";
     private final static String ITEM_LAYOUT = "com.tencent.mm:id/li";
+
+    private final static String FABAO = "com.tencent.mm:id/bbf";
+
+    private final static String QUN_RENMING = "com.tencent.mm:id/c4h";
+
+    private final static int[] Data_shunzi = new int[]{123, 234, 345, 456, 567, 789, 1234, 2345, 3456, 4567, 6789};
+    private final static int[] Data_baozi = new int[]{111, 222, 333, 444, 5555, 666, 777, 888,
+            999, 1111, 2222, 3333, 4444, 5555};
 
     private AccessibilityNodeInfo rootNodeInfo;  //界面根节点信息
     private static List<PersonMoneyBean> mMoneyBeanList = new ArrayList<>();
@@ -41,17 +54,26 @@ public class CountService extends AccessibilityService {
     private boolean isGetMoney = false;
     private int mWeishu = 2;
 
+    private static String[] dataForlei = new String[5];
+    private static int baoziCount = 0;
+    private static int shunziCount = 0;
+    private static String dataForBaozi = "未出现";
+    private static String dataForShunzi = "未出现";
+    public static int no1;
+    public static int no2;
+    private Handler mHandler;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Logger.d("CountService 开启成功");
         initSettings();
+        mHandler = new Handler();
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        Logger.d("界面变化，触发onAccessibilityEvent");
+        Log.d(TAG, "界面变化，触发onAccessibilityEvent");
         if (isOpen) {
             watchChatMoney(event);
             /*采集雷值*/
@@ -62,17 +84,18 @@ public class CountService extends AccessibilityService {
             }
             /*采集豹子*/
             if (isBaozi) {
-
+                checkBaozi();
             }
             //采集顺子数据
             if (isShunzi) {
-
+                checkShunzi();
             }
 
             if (mDataChangedListener != null) {
                 mDataChangedListener.onChanged();
             }
 
+            MyWindowManager.updateBigWindowData(dataForlei, dataForBaozi, dataForBaozi);
             //抢红包
             if (isGetMoney) {
 
@@ -88,6 +111,10 @@ public class CountService extends AccessibilityService {
     private boolean isStart = false;
     private boolean isEnd = false;
 
+    private static String oldName = "";
+    private static String newName = "";
+
+
     /**
      * 获取红包金额
      *
@@ -102,13 +129,68 @@ public class CountService extends AccessibilityService {
         List<AccessibilityNodeInfo> moneyInfo = null;
         List<AccessibilityNodeInfo> itemInfo = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(PACK_Hint);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                for (AccessibilityNodeInfo layoutnode : itemInfo) {
+                    if ("android.widget.TextView".equals(layoutnode.getClassName())) {
+                        newName = layoutnode.getText().toString();
+                        if (newName.equals(oldName)) {
+                            break;
+                        }
+                        oldName = newName;
+                        Log.d(TAG, " 找到红包名 重新统计");
+                        isEnd = false;
+                        mMoneyBeanList.clear();
+                        dataForBaozi = "未出现";
+                        dataForBaozi = "未出现";
+                        for (String s : dataForlei) {
+                            s = "";
+                        }
+                        shunziCount++;
+                        baoziCount++;
+                    }
+                }
+            }
+
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
             if (itemInfo != null && itemInfo.size() != 0) {
-                Log.d(TAG, " 找到开头 重新统计");
-                isEnd = false;
-                mMoneyBeanList.clear();
+//                Log.d(TAG, " 找到开头 重新统计");
+//                isEnd = false;
+//                mMoneyBeanList.clear();
+//                dataForBaozi = "未出现";
+//                dataForBaozi = "未出现";
+//                for (String s : dataForlei) {
+//                    s = "";
+//                }
             }
+
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FABAO);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                for (AccessibilityNodeInfo layoutnode : itemInfo) {
+                    if ("android.widget.EditText".equals(layoutnode.getClassName())) {
+                        MyWindowManager.createHintWindow(getApplicationContext());
+                        Log.d(TAG, "进入发包界面，创建发包窗口");
+                    }
+                }
+            }
+
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(QUN_RENMING);
+            if (itemInfo != null && itemInfo.size() > 1) {
+                for (AccessibilityNodeInfo layoutnode : itemInfo) {
+                    if ("android.widget.TextView".equals(layoutnode.getClassName())) {
+
+                    }
+                }
+                Log.d(TAG, "进入群信息界面");
+                Toast.makeText(getApplicationContext(), "雷中雷：正在连接当前群成员和您统计的红包数据综合分析中…………", Toast.LENGTH_SHORT).show();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "雷中雷：已为您综合分析完毕请打开你的红包进行埋雷！！！", Toast.LENGTH_SHORT).show();
+                    }
+                },3000);
+            }
+
 
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(ITEM_LAYOUT);
             if (itemInfo != null && itemInfo.size() != 0) {
@@ -148,6 +230,7 @@ public class CountService extends AccessibilityService {
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
             if (itemInfo != null && itemInfo.size() != 0 && isEnd == false) {
                 Logger.d(" 找到结尾 结束统计" + mMoneyBeanList);
+
                 isEnd = true;
             }
         }
@@ -197,6 +280,14 @@ public class CountService extends AccessibilityService {
         }
         Collections.sort(infos);
         Logger.d(infos);
+
+        dataForlei[0] = infos.get(0).index + " " + infos.get(0).str;
+        dataForlei[1] = infos.get(1).index + " " + infos.get(1).str;
+        dataForlei[2] = infos.get(2).index + " " + infos.get(2).str;
+        dataForlei[3] = infos.get(3).index + " " + infos.get(3).str;
+        dataForlei[4] = infos.get(4).index + " " + infos.get(4).str;
+        no1 = infos.get(0).index;
+        no2 = infos.get(1).index;
     }
 
     class Info implements Comparable<Info> {
@@ -244,6 +335,37 @@ public class CountService extends AccessibilityService {
         }
         Collections.sort(infos);
         Logger.d(infos);
+
+        dataForlei[0] = infos.get(0).index + " " + infos.get(0).str;
+        dataForlei[1] = infos.get(1).index + " " + infos.get(1).str;
+        dataForlei[2] = infos.get(2).index + " " + infos.get(2).str;
+        dataForlei[3] = infos.get(3).index + " " + infos.get(3).str;
+        dataForlei[4] = infos.get(4).index + " " + infos.get(4).str;
+        no1 = infos.get(0).index;
+        no2 = infos.get(1).index;
+    }
+
+
+    private void checkShunzi() {
+        for (PersonMoneyBean bean : mMoneyBeanList) {
+            if (Arrays.binarySearch(Data_shunzi, bean.moneyInt) > 0) {
+                dataForShunzi = "" + bean.moneyFloat + " ！";
+                shunziCount = 0;
+            } else {
+                dataForShunzi = "" + shunziCount + "把未出";
+            }
+        }
+    }
+
+    private void checkBaozi() {
+        for (PersonMoneyBean bean : mMoneyBeanList) {
+            if (Arrays.binarySearch(Data_baozi, bean.moneyInt) > 0) {
+                dataForBaozi = "" + bean.moneyFloat + " ！";
+                baoziCount = 0;
+            } else {
+                dataForBaozi = "" + baoziCount + "把未出";
+            }
+        }
     }
 
     private void initSettings() {
@@ -253,6 +375,10 @@ public class CountService extends AccessibilityService {
         isShunzi = sharedPreferences.getBoolean(SettingsContact.SHUNZI, false);
         isFloatOpen = sharedPreferences.getBoolean(SettingsContact.FLOAT, false);
         isGetMoney = sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false);
+        if (isFloatOpen) {
+            Log.d(TAG, "开启悬浮窗");
+            MyWindowManager.createSmallWindow(getApplicationContext());
+        }
         mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI, 2);
         Logger.d("init open state:" + isOpen + " baozi: " + isBaozi + "shunzi: " + isShunzi + "Weizhi: " + mWeishu);
         sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -280,6 +406,12 @@ public class CountService extends AccessibilityService {
                     mWeishu = sharedPreferences.getInt(SettingsContact.WEIZHI, 2);
                 } else if (key.equals(SettingsContact.FLOAT)) {
                     isFloatOpen = sharedPreferences.getBoolean(SettingsContact.FLOAT, false);
+                    if (isFloatOpen) {
+                        MyWindowManager.createSmallWindow(getApplicationContext());
+                    } else {
+                        MyWindowManager.removeSmallWindow(getApplicationContext());
+                        MyWindowManager.removeBigWindow(getApplicationContext());
+                    }
                 } else if (key.equals(SettingsContact.GET_MONEY)) {
                     isGetMoney = sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false);
                 }
@@ -297,5 +429,12 @@ public class CountService extends AccessibilityService {
 
     public void setOnDataChangedListener(DataChangedListener dataChangedListener) {
         mDataChangedListener = dataChangedListener;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MyWindowManager.removeBigWindow(getApplicationContext());
+        MyWindowManager.removeSmallWindow(getApplicationContext());
     }
 }

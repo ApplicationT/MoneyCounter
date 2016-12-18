@@ -2,6 +2,7 @@ package applock.anderson.com.moneycounter.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -32,6 +33,8 @@ public class FloatWindowBigView extends LinearLayout {
     ImageView mStarImageView;
     View mBaoziLayout;
     View mShunziLayout;
+    TextView mBaozi_text;
+    TextView mShunzi_text;
 
     public FloatWindowBigView(final Context context) {
         super(context);
@@ -48,6 +51,8 @@ public class FloatWindowBigView extends LinearLayout {
         mNo3_text = (TextView) view.findViewById(R.id.no3_lei_text);
         mNo4_text = (TextView) view.findViewById(R.id.no4_lei_text);
         mNo5_text = (TextView) view.findViewById(R.id.no5_lei_text);
+        mBaozi_text = (TextView) view.findViewById(R.id.tv_baozi);
+        mShunzi_text = (TextView) view.findViewById(R.id.tv_shunzi);
         mStarImageView = (ImageView) view.findViewById(R.id.star_imageView);
         mBaoziLayout = view.findViewById(R.id.baozi_layout);
         mShunziLayout = view.findViewById(R.id.shunzi_layout);
@@ -93,6 +98,38 @@ public class FloatWindowBigView extends LinearLayout {
 
             }
         });
+
+    }
+
+    public void upDateView(String[] dataLei,String baozi,String shunzi){
+        if(dataLei == null || baozi == null || shunzi == null) {
+            return;
+        }
+        for(int i = 0; i < dataLei.length ; i++){
+            if(!TextUtils.isEmpty(dataLei[i])); {
+                switch (i) {
+                    case 0:
+                        mNo1_text.setText(dataLei[i]);
+                        break;
+                    case 1:
+                        mNo2_text.setText(dataLei[i]);
+                        break;
+                    case 2:
+                        mNo3_text.setText(dataLei[i]);
+                        break;
+                    case 3:
+                        mNo4_text.setText(dataLei[i]);
+                        break;
+                    case 4:
+                        mNo5_text.setText(dataLei[i]);
+                        break;
+                }
+
+
+            }
+        }
+        mBaozi_text.setText(baozi);
+        mShunzi_text.setText(shunzi);
     }
 
 }

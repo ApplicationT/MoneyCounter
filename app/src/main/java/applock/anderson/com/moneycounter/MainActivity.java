@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -16,6 +17,7 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -43,7 +45,10 @@ public class MainActivity extends AppCompatActivity implements
     private SwitchButton mBaoziButton;
     private SwitchButton mFloatButton;
     private SwitchButton mGetMoney;
+    private SwitchButton mStartMusic;
     private RadioGroup mRadioGroup;
+    private RadioButton mRadioButton1;
+    private RadioButton mRadioButton2;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             accessibilityManager.addAccessibilityStateChangeListener(this);
         }
-
     }
 
     private void initView() {
@@ -69,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements
         mRadioGroup = (RadioGroup) findViewById(R.id.radiogroup);
         mGetMoney = (SwitchButton) findViewById(R.id.but_open_getmoney);
         mFloatButton = (SwitchButton) findViewById(R.id.btn_5);
+        mStartMusic = (SwitchButton) findViewById(R.id.btn_6);
+        mRadioButton1 = (RadioButton) findViewById(R.id.radioButton1);
+        mRadioButton2 = (RadioButton) findViewById(R.id.radioButton2);
         mRadioGroup.setOnCheckedChangeListener(mRadioListener);
         SharedPreferences sp = getSharedPreferences("setting", Context.MODE_PRIVATE);
         if (sp != null) {
@@ -76,9 +83,14 @@ public class MainActivity extends AppCompatActivity implements
             mShunziButton.setChecked(sp.getBoolean(SettingsContact.SHUNZI, false));
             mBaoziButton.setChecked(sp.getBoolean(SettingsContact.BAOZI, false));
             mFloatButton.setChecked(sp.getBoolean(SettingsContact.FLOAT, false));
-            mGetMoney.setChecked(sp.getBoolean(SettingsContact.GET_MONEY,false));
-            if(mFloatButton.isChecked()) {
-                MyWindowManager.createSmallWindow(getApplicationContext());
+            mGetMoney.setChecked(sp.getBoolean(SettingsContact.GET_MONEY, false));
+            mStartMusic.setChecked(sp.getBoolean(SettingsContact.MUSIC, true));
+            if (sp.getInt(SettingsContact.WEIZHI, 2) == 2) {
+                mRadioButton2.setChecked(true);
+                mRadioButton1.setChecked(false);
+            } else {
+                mRadioButton1.setChecked(true);
+                mRadioButton2.setChecked(false);
             }
         }
         mFloatButton.setOnCheckedChangeListener(mfloatListener);
@@ -86,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements
         mShunziButton.setOnCheckedChangeListener(mShunziListener);
         mBaoziButton.setOnCheckedChangeListener(mBaoziListener);
         mGetMoney.setOnCheckedChangeListener(mOpenMoneyListener);
+        mStartMusic.setOnCheckedChangeListener(mOpenMusicListener);
     }
 
     /**
@@ -206,14 +219,15 @@ public class MainActivity extends AppCompatActivity implements
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(SettingsContact.FLOAT, true);
                 editor.commit();
-                MyWindowManager.createSmallWindow(getApplicationContext());
+                //   MyWindowManager.createSmallWindow(getApplicationContext());
+
             } else {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(SettingsContact.FLOAT, false);
                 editor.commit();
-                MyWindowManager.removeSmallWindow(getApplicationContext());
-                MyWindowManager.removeBigWindow(getApplicationContext());
+                //     MyWindowManager.removeBigWindow(getApplicationContext());
+                //     MyWindowManager.removeSmallWindow(getApplicationContext());
             }
         }
     };
@@ -235,6 +249,33 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
+    private SwitchButton.OnCheckedChangeListener mOpenMusicListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.MUSIC, true);
+                editor.commit();
+                if (mp != null) {
+                    mp.start();
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            mp.start();
+                        }
+                    });
+                }
+            } else {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.MUSIC, false);
+                editor.commit();
+                if (mp != null) mp.pause();
+            }
+        }
+    };
+
     private RadioGroup.OnCheckedChangeListener mRadioListener = new RadioGroup.OnCheckedChangeListener() {
 
         @Override
@@ -252,4 +293,40 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyWindowManager.removeBigWindow(getApplicationContext());
+        MyWindowManager.removeSmallWindow(getApplicationContext());
+    }
+
+    /**
+     * 播放背景音乐部分
+     */
+    private MediaPlayer mp = new MediaPlayer();
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mp = MediaPlayer.create(this, R.raw.music);
+        SharedPreferences sp = getSharedPreferences("setting", MODE_PRIVATE);
+        if (mp != null && sp.getBoolean(SettingsContact.MUSIC, true)) {
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mp != null && mp.isPlaying()) {
+            mp.pause();
+        }
+    }
 }
