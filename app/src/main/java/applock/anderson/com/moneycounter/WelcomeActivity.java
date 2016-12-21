@@ -100,7 +100,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private boolean checkRegist(final String yanzhengcode, final boolean isBaocun) {
-        String url = "http://107.151.148.153:8080/token/index?method="
+        String url = "http://27.148.158.189:8090/token/index?method="
                 + "index&class=LuaAction&function=pidui&token="
                 + yanzhengcode
                 + "&id=11";

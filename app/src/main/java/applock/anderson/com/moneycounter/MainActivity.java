@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements
                 editor.putBoolean(SettingsContact.MUSIC, true);
                 editor.commit();
                 if (mp != null) {
-                    mp.start();
+               //     mp.start();
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
@@ -312,11 +312,11 @@ public class MainActivity extends AppCompatActivity implements
         mp = MediaPlayer.create(this, R.raw.music);
         SharedPreferences sp = getSharedPreferences("setting", MODE_PRIVATE);
         if (mp != null && sp.getBoolean(SettingsContact.MUSIC, true)) {
-            mp.start();
+        //    mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mp.start();
+         //           mp.start();
                 }
             });
         }
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
         if (mp != null && mp.isPlaying()) {
-            mp.pause();
+        //    mp.pause();
         }
     }
 }
