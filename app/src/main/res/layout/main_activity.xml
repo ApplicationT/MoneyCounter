@@ -168,14 +168,14 @@
         android:paddingBottom="4dp"
         android:paddingLeft="10dp"
         android:paddingTop="4dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/tv_open_getmoney"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="抢红包开关"
+            android:text="百分百避雷开关"
             android:textColor="@android:color/black"
             android:textSize="20sp" />
 
@@ -191,7 +191,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@android:color/holo_red_light"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="match_parent"

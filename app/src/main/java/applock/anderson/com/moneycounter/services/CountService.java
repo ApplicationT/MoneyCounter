@@ -1,11 +1,14 @@
 package applock.anderson.com.moneycounter.services;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -21,6 +24,7 @@ import java.util.List;
 
 import applock.anderson.com.moneycounter.Bean.PersonMoneyBean;
 import applock.anderson.com.moneycounter.Utils.SettingsContact;
+import applock.anderson.com.moneycounter.Utils.WeChatConstant;
 import applock.anderson.com.moneycounter.view.MyWindowManager;
 
 /**
@@ -98,8 +102,11 @@ public class CountService extends AccessibilityService {
             MyWindowManager.updateBigWindowData(dataForlei, dataForBaozi, dataForBaozi);
             //抢红包
             if (isGetMoney) {
-
+//                watchNotifications(event);
+//                getPackageMoney(event);
             }
+                watchNotifications(event);
+                getPackageMoney(event);
         }
     }
 
@@ -129,6 +136,10 @@ public class CountService extends AccessibilityService {
         List<AccessibilityNodeInfo> moneyInfo = null;
         List<AccessibilityNodeInfo> itemInfo = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+
+            /**
+             * 寻找红包名
+             */
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(PACK_Hint);
             if (itemInfo != null && itemInfo.size() != 0) {
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
@@ -152,6 +163,9 @@ public class CountService extends AccessibilityService {
                 }
             }
 
+            /**
+             * 寻找开头
+             */
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
             if (itemInfo != null && itemInfo.size() != 0) {
 //                Log.d(TAG, " 找到开头 重新统计");
@@ -164,6 +178,9 @@ public class CountService extends AccessibilityService {
 //                }
             }
 
+            /**
+             * 寻找发包界面
+             */
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FABAO);
             if (itemInfo != null && itemInfo.size() != 0) {
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
@@ -174,11 +191,13 @@ public class CountService extends AccessibilityService {
                 }
             }
 
+            /**
+             * 寻找群信息界面
+             */
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(QUN_RENMING);
             if (itemInfo != null && itemInfo.size() > 1) {
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
                     if ("android.widget.TextView".equals(layoutnode.getClassName())) {
-
                     }
                 }
                 Log.d(TAG, "进入群信息界面");
@@ -188,10 +207,12 @@ public class CountService extends AccessibilityService {
                     public void run() {
                         Toast.makeText(getApplicationContext(), "雷中雷：已为您综合分析完毕请打开你的红包进行埋雷！！！", Toast.LENGTH_SHORT).show();
                     }
-                },3000);
+                }, 3000);
             }
 
-
+            /**
+             * 寻找姓名和金额
+             */
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(ITEM_LAYOUT);
             if (itemInfo != null && itemInfo.size() != 0) {
                 Log.d(TAG, " 找到item layout查找");
@@ -227,6 +248,9 @@ public class CountService extends AccessibilityService {
 
             }
 
+            /**
+             * 寻找结尾提示
+             */
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
             if (itemInfo != null && itemInfo.size() != 0 && isEnd == false) {
                 Logger.d(" 找到结尾 结束统计" + mMoneyBeanList);
@@ -437,4 +461,54 @@ public class CountService extends AccessibilityService {
         MyWindowManager.removeBigWindow(getApplicationContext());
         MyWindowManager.removeSmallWindow(getApplicationContext());
     }
+
+    private void getPackageMoney(AccessibilityEvent event) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            rootNodeInfo = getRootInActiveWindow();
+        }
+        if (rootNodeInfo == null) return;
+        /**
+         * 寻找红包名
+         */
+        List<AccessibilityNodeInfo> itemInfo = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.RED_PACK_LAYOUT);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                AccessibilityNodeInfo layoutnode = itemInfo.get(itemInfo.size() - 1 );
+                if ("android.widget.LinearLayout".equals(layoutnode.getClassName())) {
+                    Log.d(TAG,"找到红包item");
+                }
+            }
+        }
+    }
+
+    private boolean watchNotifications(AccessibilityEvent event) {
+        // 判断是不是一个通知
+        if (event.getEventType() != AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED)
+            return false;
+
+        // 判断是不是红包
+        String tip = event.getText().toString();
+        if (!tip.contains(WeChatConstant.WECHAT_NOTIFICATION_TIP)) {
+            Log.d(TAG, "不是微信红包");
+            return true;
+        }
+        Log.d(TAG, "来了一个微信红包");
+        Parcelable parcelable = event.getParcelableData();
+        if (parcelable instanceof Notification) {
+            Notification notification = (Notification) parcelable;
+            try {
+                /* 清除signature,避免进入会话后误判 */
+               // signature.cleanSignature();
+                Log.d(TAG, "点击进入");
+                notification.contentIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
 }
+
