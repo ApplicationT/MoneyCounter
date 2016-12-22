@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -100,10 +101,15 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private boolean checkRegist(final String yanzhengcode, final boolean isBaocun) {
+        String mDeviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         String url = "http://27.148.158.189:8090/token/index?method="
                 + "index&class=LuaAction&function=pidui&token="
                 + yanzhengcode
-                + "&id=11";
+             //   + "&uuid=" + mDeviceId
+                + "&id=" + mDeviceId;
+    //    Log.i(CountService.TAG, url);
+    //    Logger.i("url" + url);
+    //    Toast.makeText(WelcomeActivity.this, url, Toast.LENGTH_SHORT).show();
         OkHttpUtils.get().url(url)
                 .build()
                 .execute(new StringCallback() {
@@ -155,6 +161,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ensure:
+                Logger.d("点击按钮");
                 checkRegist(mEditText.getText().toString(), true);
                 break;
         }
