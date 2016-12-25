@@ -225,6 +225,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@android:color/holo_red_light" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -270,17 +271,33 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:background="@drawable/flash"
         android:gravity="center"
-        android:paddingTop="30dp">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/start_plugin"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="开启插件" />
+
+
+        <TextView
+            android:id="@+id/message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_weight="1"
-            android:text="开启插件" />
+            android:layout_marginTop="50dp"
+            android:layout_below="@id/start_plugin"
+            android:padding="5dip"
+            android:text="请认准正版雷中雷10.0"
+            android:textColor="@color/red"
+            android:textSize="17sp" />
+
+
     </LinearLayout>
+
 </LinearLayout>

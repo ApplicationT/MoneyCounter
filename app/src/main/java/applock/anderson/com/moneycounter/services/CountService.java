@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -23,7 +24,9 @@ import java.util.Collections;
 import java.util.List;
 
 import applock.anderson.com.moneycounter.Bean.PersonMoneyBean;
+import applock.anderson.com.moneycounter.Utils.MoneyPackInfo;
 import applock.anderson.com.moneycounter.Utils.SettingsContact;
+import applock.anderson.com.moneycounter.Utils.StringUtil;
 import applock.anderson.com.moneycounter.Utils.WeChatConstant;
 import applock.anderson.com.moneycounter.view.MyWindowManager;
 
@@ -59,6 +62,7 @@ public class CountService extends AccessibilityService {
     private int mWeishu = 2;
 
     private static String[] dataForlei = new String[5];
+    private static int[] dataPaiMing = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     private static int baoziCount = 0;
     private static int shunziCount = 0;
     private static String dataForBaozi = "未出现";
@@ -77,7 +81,7 @@ public class CountService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        Log.d(TAG, "界面变化，触发onAccessibilityEvent");
+        //Log.d(TAG, "界面变化，触发onAccessibilityEvent");
         if (isOpen) {
             watchChatMoney(event);
             /*采集雷值*/
@@ -102,11 +106,11 @@ public class CountService extends AccessibilityService {
             MyWindowManager.updateBigWindowData(dataForlei, dataForBaozi, dataForBaozi);
             //抢红包
             if (isGetMoney) {
-//                watchNotifications(event);
-//                getPackageMoney(event);
-            }
                 watchNotifications(event);
                 getPackageMoney(event);
+            }
+            //    watchNotifications(event);
+            //    getPackageMoney(event);
         }
     }
 
@@ -132,7 +136,7 @@ public class CountService extends AccessibilityService {
             rootNodeInfo = getRootInActiveWindow();
         }
         if (rootNodeInfo == null) return;
-        Log.i(TAG, "开始查找金额");
+        //Log.i(TAG, "开始查找金额");
         List<AccessibilityNodeInfo> moneyInfo = null;
         List<AccessibilityNodeInfo> itemInfo = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -208,6 +212,12 @@ public class CountService extends AccessibilityService {
                         Toast.makeText(getApplicationContext(), "雷中雷：已为您综合分析完毕请打开你的红包进行埋雷！！！", Toast.LENGTH_SHORT).show();
                     }
                 }, 3000);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        MyWindowManager.createToast(getApplicationContext(),"加载群成员红包信息完成\n");
+                    }
+                }, 6000);
             }
 
             /**
@@ -277,8 +287,8 @@ public class CountService extends AccessibilityService {
     int[] a = new int[10];
 
     private void startCount2() {
-        Log.i(TAG, "开始 startCount1");
-        Logger.d(mMoneyBeanList);
+        // Log.i(TAG, "开始 startCount1");
+        //Logger.d(mMoneyBeanList);
         ArrayList<Info> infos = new ArrayList<>();
         for (int i = 0; i < a.length; i++) {
             a[i] = 0;
@@ -303,7 +313,7 @@ public class CountService extends AccessibilityService {
             infos.add(info);
         }
         Collections.sort(infos);
-        Logger.d(infos);
+        //Logger.d(infos);
 
         dataForlei[0] = infos.get(0).index + " " + infos.get(0).str;
         dataForlei[1] = infos.get(1).index + " " + infos.get(1).str;
@@ -312,6 +322,9 @@ public class CountService extends AccessibilityService {
         dataForlei[4] = infos.get(4).index + " " + infos.get(4).str;
         no1 = infos.get(0).index;
         no2 = infos.get(1).index;
+        for (int i = 0; i < infos.size(); i++) {
+            dataPaiMing[i] = infos.get(i).index;
+        }
     }
 
     class Info implements Comparable<Info> {
@@ -358,7 +371,7 @@ public class CountService extends AccessibilityService {
             infos.add(info);
         }
         Collections.sort(infos);
-        Logger.d(infos);
+        //Logger.d(infos);
 
         dataForlei[0] = infos.get(0).index + " " + infos.get(0).str;
         dataForlei[1] = infos.get(1).index + " " + infos.get(1).str;
@@ -367,6 +380,9 @@ public class CountService extends AccessibilityService {
         dataForlei[4] = infos.get(4).index + " " + infos.get(4).str;
         no1 = infos.get(0).index;
         no2 = infos.get(1).index;
+        for (int i = 0; i < infos.size(); i++) {
+            dataPaiMing[i] = infos.get(i).index;
+        }
     }
 
 
@@ -437,9 +453,14 @@ public class CountService extends AccessibilityService {
                         MyWindowManager.removeBigWindow(getApplicationContext());
                     }
                 } else if (key.equals(SettingsContact.GET_MONEY)) {
+//                    if (sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false)) {
+//                        Toast.makeText(CountService.this,"打开雷中类避雷开关",Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        Toast.makeText(CountService.this,"关闭雷中类避雷开关",Toast.LENGTH_SHORT).show();
+//                    }
                     isGetMoney = sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false);
                 }
-                Logger.d("open state:" + isOpen + " baozi: " + isBaozi + " shunzi: " + isShunzi
+                Log.d(TAG, "open state:" + isOpen + " baozi: " + isBaozi + " shunzi: " + isShunzi
                         + "  Weizhi: " + mWeishu + " isFloatOpen " + isFloatOpen + " isGetMoney:" + isGetMoney);
             }
         });
@@ -462,6 +483,8 @@ public class CountService extends AccessibilityService {
         MyWindowManager.removeSmallWindow(getApplicationContext());
     }
 
+    Boolean mOpenPack = false;
+
     private void getPackageMoney(AccessibilityEvent event) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             rootNodeInfo = getRootInActiveWindow();
@@ -471,16 +494,101 @@ public class CountService extends AccessibilityService {
          * 寻找红包名
          */
         List<AccessibilityNodeInfo> itemInfo = null;
-
+        Log.d(TAG, "寻找红包名");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
             itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.RED_PACK_LAYOUT);
             if (itemInfo != null && itemInfo.size() != 0) {
-                AccessibilityNodeInfo layoutnode = itemInfo.get(itemInfo.size() - 1 );
+                AccessibilityNodeInfo layoutnode = itemInfo.get(itemInfo.size() - 1);
+                Log.d(TAG, "找到红包layout " + itemInfo.size() + "个");
                 if ("android.widget.LinearLayout".equals(layoutnode.getClassName())) {
-                    Log.d(TAG,"找到红包item");
+                    Log.d(TAG, "找到红包item");
+                    if (layoutnode.findAccessibilityNodeInfosByText(WeChatConstant.WECHAT_PACK_TIP) != null
+                            && layoutnode.findAccessibilityNodeInfosByText(WeChatConstant.WECHAT_VIEW_OTHERS_CH) != null) {
+                        Log.d(TAG, "找到微信红包 ");
+                        if (layoutnode.getParent() != null) {
+                            List<AccessibilityNodeInfo> nameInfo = null;
+                            String name = "";
+                            nameInfo = layoutnode.getParent().findAccessibilityNodeInfosByViewId(WeChatConstant.RED_PACK_NAME);
+                            if (nameInfo != null && nameInfo.size() != 0) {
+                                name = nameInfo.get(0).getText().toString();
+                            }
+                            List<AccessibilityNodeInfo> textInfo = null;
+                            String text = "";
+                            textInfo = layoutnode.getParent().findAccessibilityNodeInfosByViewId(WeChatConstant.RED_PACK_TEXT);
+                            if (textInfo != null && textInfo.size() != 0) {
+                                text = textInfo.get(0).getText().toString();
+                            }
+                            Log.i(TAG, "该红包 name " + name + " text " + text);
+
+                            if (MoneyPackInfo.checkPack(name, text)) {
+                                if (!TextUtils.isEmpty(name) && text != null && !TextUtils.isEmpty(text) && text.length() != 0) {
+                                    char c = text.charAt(text.length() - 1);
+                                    Log.i(TAG, "该红包未在点击过列表中，点击红包  结尾字符" + c);
+                                    Toast.makeText(getApplicationContext(), "雷中雷：百分百避雷中…", Toast.LENGTH_SHORT).show();
+                                    if (StringUtil.isHasIn5to10(c, dataPaiMing)) {
+                                        MyWindowManager.createSecurityWindow(getApplicationContext());
+                                        layoutnode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                                        mOpenPack = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+
+            /**
+             * 寻找点击按钮
+             */
+
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.WECHAT_Click_button);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                AccessibilityNodeInfo layoutnode = itemInfo.get(0);
+                if (layoutnode != null) {
+                    Log.i(TAG, "点击打开红包");
+                    layoutnode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                    mOpenPack = true;
+                }
+            }
+
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.WECHAT_BETTER_LUCK_CH);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.WECHAT_cancel_button);
+                if (itemInfo != null && itemInfo.size() != 0) {
+                    AccessibilityNodeInfo layoutnode = itemInfo.get(0);
+                    if (layoutnode != null) {
+
+                        if (mOpenPack) {
+                            Log.i(TAG, "点击关闭红包");
+                            layoutnode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                            mOpenPack = false;
+                        }
+
+                    }
+                }
+            }
+
+
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.WECHAT_BACK);
+            if (itemInfo != null && itemInfo.size() != 0) {
+                final AccessibilityNodeInfo layoutnode = itemInfo.get(0);
+                if (layoutnode != null) {
+                    Log.i(TAG, "找到详情页 返回按钮 mOpenPack = " + mOpenPack);
+                    if (mOpenPack) {
+                        Log.i(TAG, "点击关闭详情");
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                layoutnode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                                mOpenPack = false;
+                            }
+                        }, 1000);
+
+                    }
+                }
+            }
+
         }
     }
 
@@ -501,7 +609,7 @@ public class CountService extends AccessibilityService {
             Notification notification = (Notification) parcelable;
             try {
                 /* 清除signature,避免进入会话后误判 */
-               // signature.cleanSignature();
+                // signature.cleanSignature();
                 Log.d(TAG, "点击进入");
                 notification.contentIntent.send();
             } catch (PendingIntent.CanceledException e) {
@@ -510,5 +618,6 @@ public class CountService extends AccessibilityService {
         }
         return true;
     }
+
 }
 

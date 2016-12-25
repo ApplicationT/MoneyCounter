@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,6 +28,7 @@ import com.orhanobut.logger.Logger;
 import java.util.List;
 
 import applock.anderson.com.moneycounter.Utils.SettingsContact;
+import applock.anderson.com.moneycounter.services.CountService;
 import applock.anderson.com.moneycounter.view.MyWindowManager;
 
 /**
@@ -62,6 +64,13 @@ public class MainActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             accessibilityManager.addAccessibilityStateChangeListener(this);
         }
+//        LayoutInflater inflater = getLayoutInflater();
+//        View layout = inflater.inflate(R.layout.toast_item, (ViewGroup) findViewById(R.id.toast_content));
+//        Toast toast =
+//                Toast.makeText(getApplicationContext(), "请认准正版雷中雷10.0", Toast.LENGTH_LONG);
+//        toast.setView(layout);
+//        toast.show();
+       MyWindowManager.createToast(getApplicationContext(),"请认准正版雷中雷");
     }
 
     private void initView() {
@@ -239,11 +248,13 @@ public class MainActivity extends AppCompatActivity implements
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(SettingsContact.GET_MONEY, true);
+                Log.i(CountService.TAG, "打开避雷开关");
                 editor.commit();
             } else {
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(SettingsContact.GET_MONEY, false);
+                Log.i(CountService.TAG, "关闭避雷开关");
                 editor.commit();
             }
         }

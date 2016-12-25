@@ -38,6 +38,9 @@ public class MyWindowManager {
 
     private static FloatWindowHintView mHintView;
     private static LayoutParams mHintWindowParams;
+
+    private static FloatSecurityView mSecurityView;
+    private static LayoutParams mSecutWindowParams;
     /**
      * 小悬浮窗View的参数
      */
@@ -128,7 +131,7 @@ public class MyWindowManager {
             }
             windowManager.addView(bigWindow, bigWindowParams);
             Logger.d("添加big view");
-            bigWindow.upDateView(data1,data2,data3);
+            bigWindow.upDateView(data1, data2, data3);
         }
 
     }
@@ -277,16 +280,16 @@ public class MyWindowManager {
         if (mHintView == null) {
             mHintView = new FloatWindowHintView(mContext);
             String jianyi = "";
-            if(data1 != null && data1[0] != null) {
-                jianyi= "雷中雷建议雷值：" + CountService.no1+ ", " + CountService.no2;
+            if (data1 != null && data1[0] != null) {
+                jianyi = "雷中雷建议雷值：" + CountService.no1 + ", " + CountService.no2;
             }
-            String tisi = "雷中雷提示：豹子" + data2 +  " 顺子" + data3;
+            String tisi = "雷中雷提示：豹子" + data2 + " 顺子" + data3;
             Logger.d("添加hint viewcanshu" + jianyi + tisi);
-            mHintView.upDateUI(jianyi,tisi);
+            mHintView.upDateUI(jianyi, tisi);
             if (mHintWindowParams == null) {
                 mHintWindowParams = new LayoutParams();
-                  mHintWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
-                  mHintWindowParams.y = screenHeight / 8 - FloatWindowBigView.viewHeight / 2;
+                mHintWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
+                mHintWindowParams.y = screenHeight / 8 - FloatWindowBigView.viewHeight / 2;
                 mHintWindowParams.type = LayoutParams.TYPE_TOAST;
                 mHintWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
@@ -319,8 +322,132 @@ public class MyWindowManager {
                 }
             }, 9000);
         }
-
     }
+
+    public static void createSecurityWindow(final Context context) {
+        Handler handler = new Handler();
+        mContext = context;
+        WindowManager windowManager = getWindowManager(context);
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        if (mSecurityView == null) {
+            mSecurityView = new FloatSecurityView(mContext);
+
+            Logger.d("添加安全界面");
+            if (mSecutWindowParams == null) {
+                mSecutWindowParams = new LayoutParams();
+                mSecutWindowParams.x = screenWidth / 2 - FloatSecurityView.viewWidth / 2;
+                mSecutWindowParams.y = screenHeight / 2 - FloatSecurityView.viewHeight / 2;
+                mSecutWindowParams.type = LayoutParams.TYPE_TOAST;
+                mSecutWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
+                mSecutWindowParams.format = PixelFormat.RGBA_8888;
+                mSecutWindowParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+                mSecutWindowParams.width = FloatSecurityView.viewWidth;
+                mSecutWindowParams.height = FloatSecurityView.viewHeight;
+            }
+            windowManager.addView(mSecurityView, mSecutWindowParams);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mSecurityView != null) {
+                        WindowManager windowManager = getWindowManager(context);
+                        windowManager.removeViewImmediate(mSecurityView);
+                        mSecurityView = null;
+                        Logger.d("移除安全界面");
+                    }
+                }
+            }, 3000);
+        }
+    }
+
+    private static ToastView mToastView;
+    private static LayoutParams mToastWindowParams;
+
+    public static void createToast(final Context context, String text) {
+        Handler handler = new Handler();
+        mContext = context;
+        WindowManager windowManager = getWindowManager(context);
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        if (mToastView == null) {
+            mToastView = new ToastView(mContext, text);
+
+            Logger.d("添加安全界面");
+            if (mToastWindowParams == null) {
+                mToastWindowParams = new LayoutParams();
+                mToastWindowParams.x = screenWidth / 2 - ToastView.viewWidth / 2;
+                mToastWindowParams.y = screenHeight / 2 - ToastView.viewHeight / 2;
+                mToastWindowParams.type = LayoutParams.TYPE_TOAST;
+                mToastWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
+                mToastWindowParams.format = PixelFormat.RGBA_8888;
+                mToastWindowParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+                mToastWindowParams.width = ToastView.viewWidth;
+                mToastWindowParams.height = ToastView.viewHeight;
+            }
+            windowManager.addView(mToastView, mToastWindowParams);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mToastView != null) {
+                        WindowManager windowManager = getWindowManager(context);
+                        windowManager.removeViewImmediate(mToastView);
+                        mToastView = null;
+                        Logger.d("移除安全界面");
+                    }
+                }
+            }, 3000);
+        }
+    }
+
+    public static void createToast(final Context context, String text, int delay) {
+        Handler handler = new Handler();
+        mContext = context;
+        WindowManager windowManager = getWindowManager(context);
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        if (mToastView == null) {
+            mToastView = new ToastView(mContext, text);
+
+            Logger.d("添加安全界面");
+            if (mToastWindowParams == null) {
+                mToastWindowParams = new LayoutParams();
+                mToastWindowParams.x = screenWidth / 2 - ToastView.viewWidth / 2;
+                mToastWindowParams.y = screenHeight / 2 - ToastView.viewHeight / 2;
+                mToastWindowParams.type = LayoutParams.TYPE_TOAST;
+                mToastWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
+                mToastWindowParams.format = PixelFormat.RGBA_8888;
+                mToastWindowParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+                mToastWindowParams.width = ToastView.viewWidth;
+                mToastWindowParams.height = ToastView.viewHeight;
+            }
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WindowManager windowManager = getWindowManager(context);
+                    windowManager.addView(mToastView,mToastWindowParams);
+                }
+            }, delay);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mToastView != null) {
+                        WindowManager windowManager = getWindowManager(context);
+                        windowManager.removeViewImmediate(mToastView);
+                        mToastView = null;
+                        Logger.d("移除安全界面");
+                    }
+                }
+            }, 3000 + delay);
+        }
+    }
+
+
 }
 
 
