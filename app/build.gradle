@@ -7,8 +7,8 @@ android {
         applicationId "applock.anderson.com.moneycounter"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 10
-        versionName "10.0"
+        versionCode 12
+        versionName "12.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

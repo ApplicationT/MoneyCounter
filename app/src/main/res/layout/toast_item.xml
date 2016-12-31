@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="5dip"
             android:text="请认准正版雷中雷10.0"
-            android:textSize="17sp"
+            android:textSize="18sp"
             android:textColor="@color/red"/>
     </ScrollView>
 </LinearLayout>

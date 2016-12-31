@@ -288,28 +288,34 @@ public class MyWindowManager {
             mHintView.upDateUI(jianyi, tisi);
             if (mHintWindowParams == null) {
                 mHintWindowParams = new LayoutParams();
-                mHintWindowParams.x = screenWidth / 2 - FloatWindowBigView.viewWidth / 2;
-                mHintWindowParams.y = screenHeight / 8 - FloatWindowBigView.viewHeight / 2;
+                mHintWindowParams.x = screenWidth / 2 - FloatWindowHintView.viewWidth / 2;
+                mHintWindowParams.y = screenHeight / 7 - FloatWindowHintView.viewHeight / 2;
                 mHintWindowParams.type = LayoutParams.TYPE_TOAST;
                 mHintWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
+                        | LayoutParams.FLAG_NOT_FOCUSABLE;
                 mHintWindowParams.format = PixelFormat.RGBA_8888;
-                mHintWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
-                mHintWindowParams.width = FloatWindowBigView.viewWidth;
-                mHintWindowParams.height = FloatWindowBigView.viewHeight;
+                mHintWindowParams.gravity = Gravity.TOP | Gravity.LEFT;
+                mHintWindowParams.width = FloatWindowHintView.viewWidth;
+                mHintWindowParams.height = FloatWindowHintView.viewHeight;
             }
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    WindowManager windowManager = getWindowManager(context);
-                    if (mHintView != null) {
-                        windowManager.addView(mHintView, mHintWindowParams);
-                        Logger.d("添加hint view");
-                    } else {
-                        Logger.d("添加hint view失败  为空");
-                    }
-                }
-            }, 2000);
+            if (mHintView != null) {
+                windowManager.addView(mHintView, mHintWindowParams);
+                Logger.d("添加hint view");
+            } else {
+                Logger.d("添加hint view失败  为空");
+            }
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    WindowManager windowManager = getWindowManager(context);
+//                    if (mHintView != null) {
+//                        windowManager.addView(mHintView, mHintWindowParams);
+//                        Logger.d("添加hint view");
+//                    } else {
+//                        Logger.d("添加hint view失败  为空");
+//                    }
+//                }
+//            }, 2500);
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -320,7 +326,7 @@ public class MyWindowManager {
                         Logger.d("移除hint view");
                     }
                 }
-            }, 9000);
+            }, 6000);
         }
     }
 
@@ -374,7 +380,7 @@ public class MyWindowManager {
         if (mToastView == null) {
             mToastView = new ToastView(mContext, text);
 
-            Logger.d("添加安全界面");
+            Logger.d("添加Toast界面");
             if (mToastWindowParams == null) {
                 mToastWindowParams = new LayoutParams();
                 mToastWindowParams.x = screenWidth / 2 - ToastView.viewWidth / 2;
@@ -396,14 +402,14 @@ public class MyWindowManager {
                         WindowManager windowManager = getWindowManager(context);
                         windowManager.removeViewImmediate(mToastView);
                         mToastView = null;
-                        Logger.d("移除安全界面");
+                        Logger.d("移除Toast界面");
                     }
                 }
             }, 3000);
         }
     }
 
-    public static void createToast(final Context context, String text, int delay) {
+    public static void createToast(final Context context, String text, int delay, int timelong) {
         Handler handler = new Handler();
         mContext = context;
         WindowManager windowManager = getWindowManager(context);
@@ -412,7 +418,7 @@ public class MyWindowManager {
         if (mToastView == null) {
             mToastView = new ToastView(mContext, text);
 
-            Logger.d("添加安全界面");
+
             if (mToastWindowParams == null) {
                 mToastWindowParams = new LayoutParams();
                 mToastWindowParams.x = screenWidth / 2 - ToastView.viewWidth / 2;
@@ -428,8 +434,9 @@ public class MyWindowManager {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    Logger.d("添加Toast界面");
                     WindowManager windowManager = getWindowManager(context);
-                    windowManager.addView(mToastView,mToastWindowParams);
+                    windowManager.addView(mToastView, mToastWindowParams);
                 }
             }, delay);
 
@@ -440,10 +447,50 @@ public class MyWindowManager {
                         WindowManager windowManager = getWindowManager(context);
                         windowManager.removeViewImmediate(mToastView);
                         mToastView = null;
-                        Logger.d("移除安全界面");
+                        Logger.d("移除Toast界面");
                     }
                 }
-            }, 3000 + delay);
+            }, timelong + delay);
+        }
+    }
+
+    private static FloatFourierView mFourierView;
+    private static LayoutParams mFourierWindowParams;
+    public static void createFourierWindow(final Context context, int text, int timelong) {
+        Handler handler = new Handler();
+        mContext = context;
+        WindowManager windowManager = getWindowManager(context);
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        if (mFourierView == null) {
+            mFourierView = new FloatFourierView(mContext, text);
+
+            Logger.d("添加fuliye界面");
+            if (mFourierWindowParams == null) {
+                mFourierWindowParams = new LayoutParams();
+                mFourierWindowParams.x = screenWidth / 2 - FloatFourierView.viewWidth / 2;
+                mFourierWindowParams.y = screenHeight / 2 - FloatFourierView.viewHeight / 2;
+                mFourierWindowParams.type = LayoutParams.TYPE_TOAST;
+                mFourierWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
+                mFourierWindowParams.format = PixelFormat.RGBA_8888;
+                mFourierWindowParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+                mFourierWindowParams.width = FloatFourierView.viewWidth;
+                mFourierWindowParams.height = FloatFourierView.viewHeight;
+            }
+            windowManager.addView(mFourierView, mFourierWindowParams);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mFourierView != null) {
+                        WindowManager windowManager = getWindowManager(context);
+                        windowManager.removeViewImmediate(mFourierView);
+                        mFourierView = null;
+                        Logger.d("移除fuliye界面");
+                    }
+                }
+            }, timelong);
         }
     }
 

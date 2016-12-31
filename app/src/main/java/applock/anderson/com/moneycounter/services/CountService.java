@@ -59,6 +59,8 @@ public class CountService extends AccessibilityService {
     private boolean isShunzi = false;
     private boolean isFloatOpen = false;
     private boolean isGetMoney = false;
+    private boolean isFourier = false;
+
     private int mWeishu = 2;
 
     private static String[] dataForlei = new String[5];
@@ -124,7 +126,7 @@ public class CountService extends AccessibilityService {
 
     private static String oldName = "";
     private static String newName = "";
-
+    private static long packTime = System.currentTimeMillis();
 
     /**
      * 获取红包金额
@@ -163,6 +165,7 @@ public class CountService extends AccessibilityService {
                         }
                         shunziCount++;
                         baoziCount++;
+                        packTime = System.currentTimeMillis();
                     }
                 }
             }
@@ -189,8 +192,25 @@ public class CountService extends AccessibilityService {
             if (itemInfo != null && itemInfo.size() != 0) {
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
                     if ("android.widget.EditText".equals(layoutnode.getClassName())) {
-                        MyWindowManager.createHintWindow(getApplicationContext());
+
                         Log.d(TAG, "进入发包界面，创建发包窗口");
+                        //   if (isFourier)
+//                        MyWindowManager.createToast(getApplicationContext()
+//                                    , "傅立叶离散推荐雷值: " + (packTime % 10)
+//                                    , 1000
+//                                    , 5000);
+
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyWindowManager.createHintWindow(getApplicationContext());
+                                if (isFourier) {
+                                    MyWindowManager.createFourierWindow(getApplicationContext()
+                                            , (int) (packTime % 10), 5000);
+                                }
+                            }
+                        }, 1500);
+
                     }
                 }
             }
@@ -215,7 +235,7 @@ public class CountService extends AccessibilityService {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        MyWindowManager.createToast(getApplicationContext(),"加载群成员红包信息完成\n");
+                        MyWindowManager.createToast(getApplicationContext(), "加载群成员红包信息完成\n");
                     }
                 }, 6000);
             }
@@ -415,6 +435,7 @@ public class CountService extends AccessibilityService {
         isShunzi = sharedPreferences.getBoolean(SettingsContact.SHUNZI, false);
         isFloatOpen = sharedPreferences.getBoolean(SettingsContact.FLOAT, false);
         isGetMoney = sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false);
+        isFourier = sharedPreferences.getBoolean(SettingsContact.Fourier, false);
         if (isFloatOpen) {
             Log.d(TAG, "开启悬浮窗");
             MyWindowManager.createSmallWindow(getApplicationContext());
@@ -459,9 +480,16 @@ public class CountService extends AccessibilityService {
 //                        Toast.makeText(CountService.this,"关闭雷中类避雷开关",Toast.LENGTH_SHORT).show();
 //                    }
                     isGetMoney = sharedPreferences.getBoolean(SettingsContact.GET_MONEY, false);
+                } else if (key.equals(SettingsContact.Fourier)) {
+                    isFourier = sharedPreferences.getBoolean(SettingsContact.Fourier, false);
                 }
-                Log.d(TAG, "open state:" + isOpen + " baozi: " + isBaozi + " shunzi: " + isShunzi
-                        + "  Weizhi: " + mWeishu + " isFloatOpen " + isFloatOpen + " isGetMoney:" + isGetMoney);
+                Log.d(TAG, "open state:" + isOpen
+                        + " baozi: " + isBaozi
+                        + " shunzi: " + isShunzi
+                        + "  Weizhi: " + mWeishu
+                        + " isFloatOpen: " + isFloatOpen
+                        + " isGetMoney:" + isGetMoney
+                        + " isFourier: " + isFourier);
             }
         });
     }
@@ -584,7 +612,6 @@ public class CountService extends AccessibilityService {
                                 mOpenPack = false;
                             }
                         }, 1000);
-
                     }
                 }
             }

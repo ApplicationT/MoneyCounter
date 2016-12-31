@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements
     private SwitchButton mFloatButton;
     private SwitchButton mGetMoney;
     private SwitchButton mStartMusic;
+    private SwitchButton mFourier;
     private RadioGroup mRadioGroup;
     private RadioButton mRadioButton1;
     private RadioButton mRadioButton2;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements
         mGetMoney = (SwitchButton) findViewById(R.id.but_open_getmoney);
         mFloatButton = (SwitchButton) findViewById(R.id.btn_5);
         mStartMusic = (SwitchButton) findViewById(R.id.btn_6);
+        mFourier = (SwitchButton) findViewById(R.id.btn_fuliye);
         mRadioButton1 = (RadioButton) findViewById(R.id.radioButton1);
         mRadioButton2 = (RadioButton) findViewById(R.id.radioButton2);
         mRadioGroup.setOnCheckedChangeListener(mRadioListener);
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements
             mFloatButton.setChecked(sp.getBoolean(SettingsContact.FLOAT, false));
             mGetMoney.setChecked(sp.getBoolean(SettingsContact.GET_MONEY, false));
             mStartMusic.setChecked(sp.getBoolean(SettingsContact.MUSIC, true));
+            mFourier.setChecked(sp.getBoolean(SettingsContact.Fourier,false));
             if (sp.getInt(SettingsContact.WEIZHI, 2) == 2) {
                 mRadioButton2.setChecked(true);
                 mRadioButton1.setChecked(false);
@@ -108,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements
         mBaoziButton.setOnCheckedChangeListener(mBaoziListener);
         mGetMoney.setOnCheckedChangeListener(mOpenMoneyListener);
         mStartMusic.setOnCheckedChangeListener(mOpenMusicListener);
+        mFourier.setOnCheckedChangeListener(mFourierListener);
     }
 
     /**
@@ -260,6 +264,25 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
+    private SwitchButton.OnCheckedChangeListener mFourierListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.Fourier, true);
+                Log.i(CountService.TAG, "打开傅立叶开关");
+                editor.commit();
+            } else {
+                SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(SettingsContact.Fourier, false);
+                Log.i(CountService.TAG, "关闭傅立叶开关");
+                editor.commit();
+            }
+        }
+    };
+
     private SwitchButton.OnCheckedChangeListener mOpenMusicListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -305,6 +328,8 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -340,4 +365,5 @@ public class MainActivity extends AppCompatActivity implements
             mp.pause();
         }
     }
+
 }

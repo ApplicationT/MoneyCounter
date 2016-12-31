@@ -205,6 +205,39 @@
         android:paddingTop="4dp">
 
         <TextView
+            android:id="@+id/tv_fuliye"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="傅立叶离散雷值建议"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
+        <com.kyleduo.switchbutton.SwitchButton
+            android:id="@+id/btn_fuliye"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="30dip" />
+    </LinearLayout>
+
+    <View xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/holo_red_light" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="4dp">
+
+        <TextView
             android:id="@+id/tv_5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -293,7 +326,7 @@
             android:layout_marginTop="50dp"
             android:layout_below="@id/start_plugin"
             android:padding="5dip"
-            android:text="请认准正版雷中雷10.0"
+            android:text="请认准正版雷中雷12.0"
             android:textColor="@color/red"
             android:textSize="17sp" />
 
