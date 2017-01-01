@@ -36,16 +36,7 @@ import applock.anderson.com.moneycounter.view.MyWindowManager;
 
 public class CountService extends AccessibilityService {
     public final static String TAG = "MoneyCounter";
-    private final static String PACK_Hint = "com.tencent.mm:id/bai";
-    private final static String FIRST_HINT = "com.tencent.mm:id/baq";
-    private final static String NAME_ID = "com.tencent.mm:id/bdn";
-    private final static String MONEY_ID = "com.tencent.mm:id/bdr";
-    private final static String END_HINT = "com.tencent.mm:id/bdx";
-    private final static String ITEM_LAYOUT = "com.tencent.mm:id/li";
 
-    private final static String FABAO = "com.tencent.mm:id/bbf";
-
-    private final static String QUN_RENMING = "com.tencent.mm:id/c4h";
 
     private final static int[] Data_shunzi = new int[]{123, 234, 345, 456, 567, 789, 1234, 2345, 3456, 4567, 6789};
     private final static int[] Data_baozi = new int[]{111, 222, 333, 444, 5555, 666, 777, 888,
@@ -146,7 +137,7 @@ public class CountService extends AccessibilityService {
             /**
              * 寻找红包名
              */
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(PACK_Hint);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.PACK_Hint);
             if (itemInfo != null && itemInfo.size() != 0) {
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
                     if ("android.widget.TextView".equals(layoutnode.getClassName())) {
@@ -173,7 +164,7 @@ public class CountService extends AccessibilityService {
             /**
              * 寻找开头
              */
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FIRST_HINT);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.FIRST_HINT);
             if (itemInfo != null && itemInfo.size() != 0) {
 //                Log.d(TAG, " 找到开头 重新统计");
 //                isEnd = false;
@@ -188,7 +179,7 @@ public class CountService extends AccessibilityService {
             /**
              * 寻找发包界面
              */
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(FABAO);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.FABAO);
             if (itemInfo != null && itemInfo.size() != 0) {
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
                     if ("android.widget.EditText".equals(layoutnode.getClassName())) {
@@ -218,7 +209,7 @@ public class CountService extends AccessibilityService {
             /**
              * 寻找群信息界面
              */
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(QUN_RENMING);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.QUN_RENMING);
             if (itemInfo != null && itemInfo.size() > 1) {
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
                     if ("android.widget.TextView".equals(layoutnode.getClassName())) {
@@ -243,7 +234,7 @@ public class CountService extends AccessibilityService {
             /**
              * 寻找姓名和金额
              */
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(ITEM_LAYOUT);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.ITEM_LAYOUT);
             if (itemInfo != null && itemInfo.size() != 0) {
                 Log.d(TAG, " 找到item layout查找");
                 for (AccessibilityNodeInfo layoutnode : itemInfo) {
@@ -251,8 +242,8 @@ public class CountService extends AccessibilityService {
                         Logger.e("找到layout");
                         List<AccessibilityNodeInfo> name = null;
                         List<AccessibilityNodeInfo> money = null;
-                        name = layoutnode.findAccessibilityNodeInfosByViewId(NAME_ID);
-                        money = layoutnode.findAccessibilityNodeInfosByViewId(MONEY_ID);
+                        name = layoutnode.findAccessibilityNodeInfosByViewId(WeChatConstant.NAME_ID);
+                        money = layoutnode.findAccessibilityNodeInfosByViewId(WeChatConstant.MONEY_ID);
                         if (name != null && name.size() != 0 && money != null && money.size() != 0) {
                             PersonMoneyBean personMoneyBean = new PersonMoneyBean();
                             Log.e(TAG, "开始查找姓名和金额");
@@ -281,7 +272,7 @@ public class CountService extends AccessibilityService {
             /**
              * 寻找结尾提示
              */
-            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(END_HINT);
+            itemInfo = rootNodeInfo.findAccessibilityNodeInfosByViewId(WeChatConstant.END_HINT);
             if (itemInfo != null && itemInfo.size() != 0 && isEnd == false) {
                 Logger.d(" 找到结尾 结束统计" + mMoneyBeanList);
 

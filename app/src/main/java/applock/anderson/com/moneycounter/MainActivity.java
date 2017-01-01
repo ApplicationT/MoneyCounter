@@ -28,6 +28,7 @@ import com.orhanobut.logger.Logger;
 import java.util.List;
 
 import applock.anderson.com.moneycounter.Utils.SettingsContact;
+import applock.anderson.com.moneycounter.Utils.WeChatConstant;
 import applock.anderson.com.moneycounter.services.CountService;
 import applock.anderson.com.moneycounter.view.MyWindowManager;
 
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.main_activity);
         initView();
         handleMaterialStatusBar();
+        WeChatConstant.upDataId(getApplicationContext());
         Logger.d("开始 监听AccessibilityService 变化");
         //监听AccessibilityService 变化
         accessibilityManager = (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
@@ -271,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements
                 SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(SettingsContact.Fourier, true);
+            //    Logger.d("微信版本 ：" + VersionUtils.getVersionCode(getApplicationContext()) + "  " + VersionUtils.getVersionName(getApplicationContext()                                                                   ));
                 Log.i(CountService.TAG, "打开傅立叶开关");
                 editor.commit();
             } else {
