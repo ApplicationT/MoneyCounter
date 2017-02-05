@@ -72,6 +72,7 @@ public class CountService extends AccessibilityService {
         mHandler = new Handler();
     }
 
+
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         //Log.d(TAG, "界面变化，触发onAccessibilityEvent");

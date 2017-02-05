@@ -18,7 +18,7 @@ public class StringUtil {
         if (a.length != 10) {
             return false;
         }
-        for (int i = 5; i < 10; i++) {
+        for (int i = 3; i < 10; i++) {
             if (c == a[i] + '0') {
                 Logger.d("在后5名里面找到该数字");
                 return true;

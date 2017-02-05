@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements
     private RadioGroup mRadioGroup;
     private RadioButton mRadioButton1;
     private RadioButton mRadioButton2;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
