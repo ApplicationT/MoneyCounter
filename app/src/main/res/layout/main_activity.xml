@@ -378,17 +378,16 @@
                 android:layout_below="@id/start_plugin"
                 android:layout_marginTop="50dp"
                 android:padding="5dip"
-                android:text="请认准正版雷中雷16.0"
+                android:text="请认准正版雷中雷17.0"
                 android:textColor="#aaff0000"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
-            <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            <TextView
                 android:id="@+id/text1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="官方下载地址:http://www.i8cv.com/index.php/so/41307
-"
+                android:text="官方下载地址:http://www.i8cv.com/index.php/so/33289"
                 android:autoLink="all"/>
 
         </LinearLayout>
