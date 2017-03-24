@@ -85,6 +85,25 @@ public class WeChatConstant {
             FABAO = "com.tencent.mm:id/bg6";
             QUN_RENMING = "com.tencent.mm:id/c9o";
 
+        } else if (version.equals("6.5.6")) {
+            RED_PACK_LAYOUT = "com.tencent.mm:id/a5c";
+            RED_PACK_NAME = "com.tencent.mm:id/ie";
+            RED_PACK_TEXT = "com.tencent.mm:id/a6_";
+
+            WECHAT_cancel_button = "com.tencent.mm:id/bh8";
+            WECHAT_Click_button = "com.tencent.mm:id/bjj";
+            WECHAT_BACK = "com.tencent.mm:id/gv";
+
+            PACK_Hint = "com.tencent.mm:id/bfs";
+            FIRST_HINT = "com.tencent.mm:id/bg0";
+            NAME_ID = "com.tencent.mm:id/bjn";
+            MONEY_ID = "com.tencent.mm:id/bjr";
+            END_HINT = "com.tencent.mm:id/bfm";
+            ITEM_LAYOUT = "com.tencent.mm:id/lm";
+
+            FABAO = "com.tencent.mm:id/bhj";
+            QUN_RENMING = "com.tencent.mm:id/cao";
+
         }
     }
 }

@@ -287,10 +287,9 @@ public class MyWindowManager {
             Logger.d("添加hint viewcanshu" + jianyi + tisi);
             mHintView.upDateUI(jianyi, tisi);
             if (mHintWindowParams == null) {
-                mHintWindowParams = new LayoutParams();
+                mHintWindowParams = new LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY);
                 mHintWindowParams.x = screenWidth / 2 - FloatWindowHintView.viewWidth / 2;
                 mHintWindowParams.y = screenHeight / 7 - FloatWindowHintView.viewHeight / 2;
-                mHintWindowParams.type = LayoutParams.TYPE_TOAST;
                 mHintWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | LayoutParams.FLAG_NOT_FOCUSABLE;
                 mHintWindowParams.format = PixelFormat.RGBA_8888;
@@ -470,7 +469,7 @@ public class MyWindowManager {
                 mFourierWindowParams = new LayoutParams();
                 mFourierWindowParams.x = screenWidth / 2 - FloatFourierView.viewWidth / 2;
                 mFourierWindowParams.y = screenHeight / 2 - FloatFourierView.viewHeight / 2;
-                mFourierWindowParams.type = LayoutParams.TYPE_TOAST;
+                mFourierWindowParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
                 mFourierWindowParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_NOT_TOUCHABLE;
                 mFourierWindowParams.format = PixelFormat.RGBA_8888;

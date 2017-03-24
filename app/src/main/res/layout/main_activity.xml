@@ -421,7 +421,7 @@
                         android:layout_below="@id/start_plugin"
                         android:layout_marginTop="50dp"
                         android:padding="5dip"
-                        android:text="请认准正版雷中雷18.0"
+                        android:text="请认准正版雷中雷19.0"
                         android:textColor="#aaff0000"
                         android:textSize="25sp"
                         android:textStyle="bold" />
